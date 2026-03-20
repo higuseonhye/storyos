@@ -41,7 +41,7 @@ See **`.env.example`** for all variables.
 
 ### Same-site deploy (Vercel: frontend + API together)
 
-This repo includes **`api/index.js`**, which runs the Express stack as a **Vercel serverless** function. All `/api/*` routes are rewritten to it (`vercel.json`).
+This repo includes **`api/health.js`**, **`api/agents.js`**, and **`api/discuss/stream.js`**, which delegate to the same Express app via **`server/getApp.js`** (Vercel needs one file per URL path — `/api/index` alone does not handle `/api/health`).
 
 1. Connect the repo to **Vercel** (framework: Vite, or leave auto-detect; `vercel.json` sets `build` + `outputDirectory`).
 2. In **Vercel → Project → Settings → Environment Variables** (Production + Preview as needed), set:
