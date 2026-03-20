@@ -4,7 +4,7 @@ import './Landing.css'
 /** ms before primary CTA unlocks — first moments feel still, not demanding */
 const CTA_READY_DELAY_MS = 1900
 
-export function Landing({ exiting, anticipating, onEnterStory }) {
+export function Landing({ exiting, anticipating, onEnterLive, onEnterDemo }) {
   const [awake, setAwake] = useState(false)
   const [ctaReady, setCtaReady] = useState(false)
 
@@ -27,24 +27,37 @@ export function Landing({ exiting, anticipating, onEnterStory }) {
         <section className="landing__hero" aria-labelledby="landing-headline">
           <p className="landing__wordmark">StoryOS</p>
           <p className="landing__kicker">
-            Not a chat thread — one judgment, unfolding as a live reasoning line.
+            Not one answer — a portfolio of voices reasoning in parallel, live.
           </p>
           <h1 id="landing-headline" className="landing__headline">
-            Watch AI think.
+            Think in public.
           </h1>
-          <p className="landing__subtext">
-            One short mission plays out in order: research, tension, judgment, a
-            closing line. You don’t type. You watch — like following a thought as
-            it forms.
+          <p className="landing__context">
+            Strategy, skepticism, and execution — together.
+            <br />
+            You steer; the panel debates in real time.
           </p>
-          <button
-            type="button"
-            className={`landing__cta ${!ctaReady && !exiting && !anticipating ? 'landing__cta--waiting' : ''}`}
-            onClick={onEnterStory}
-            disabled={locked}
-          >
-            Start a mission
-          </button>
+          <p className="landing__subtext">
+            Real models on your stack — or watch the scripted mission unfold.
+          </p>
+          <div className="landing__ctas">
+            <button
+              type="button"
+              className={`landing__cta ${!ctaReady && !exiting && !anticipating ? 'landing__cta--waiting' : ''}`}
+              onClick={onEnterLive}
+              disabled={locked}
+            >
+              Open live panel
+            </button>
+            <button
+              type="button"
+              className={`landing__cta landing__cta--secondary ${!ctaReady && !exiting && !anticipating ? 'landing__cta--waiting' : ''}`}
+              onClick={onEnterDemo}
+              disabled={locked}
+            >
+              Watch scripted demo
+            </button>
+          </div>
         </section>
 
         <section className="landing__block" aria-label="The problem">
@@ -69,7 +82,7 @@ export function Landing({ exiting, anticipating, onEnterStory }) {
         </section>
 
         <footer className="landing__footer">
-          <p>StoryOS — intelligence, told as a story</p>
+          <p>StoryOS — intelligence as a live panel</p>
         </footer>
       </div>
     </div>

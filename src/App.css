@@ -40,6 +40,35 @@
   color: var(--text-faint);
 }
 
+.app__header-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+  justify-content: center;
+}
+
+.app__ghost {
+  font-family: var(--font-ui);
+  font-size: 0.6875rem;
+  font-weight: 400;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  padding: 0.85rem 1.35rem;
+  color: var(--text-soft);
+  background: transparent;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition:
+    color 0.45s ease,
+    border-color 0.45s ease;
+}
+
+.app__ghost:hover {
+  color: var(--text);
+  border-color: rgba(236, 236, 236, 0.15);
+}
+
 .app__start {
   font-family: var(--font-ui);
   font-size: 0.6875rem;

@@ -1,5 +1,6 @@
 import { useCallback, useRef, useState } from 'react'
 import { Landing } from './components/Landing'
+import { DiscussionStudio } from './components/DiscussionStudio'
 import { StoryTimeline } from './components/StoryTimeline'
 import './App.css'
 
@@ -17,7 +18,7 @@ export default function App() {
   const enteringRef = useRef(false)
   const handleRunEnd = useCallback(() => setRunning(false), [])
 
-  const enterStory = useCallback(() => {
+  const transitionFromLanding = useCallback((nextView) => {
     if (enteringRef.current) return
     enteringRef.current = true
     setAnticipating(true)
@@ -25,8 +26,8 @@ export default function App() {
     window.setTimeout(() => {
       setLandingExiting(true)
       window.setTimeout(() => {
-        setView('story')
-        setRunning(true)
+        setView(nextView)
+        if (nextView === 'demo') setRunning(true)
         setLandingExiting(false)
         setAnticipating(false)
         enteringRef.current = false
@@ -34,28 +35,39 @@ export default function App() {
     }, PAUSE_BEFORE_LANDING_FADE_MS)
   }, [])
 
+  const enterLive = useCallback(() => transitionFromLanding('live'), [transitionFromLanding])
+  const enterDemo = useCallback(() => transitionFromLanding('demo'), [transitionFromLanding])
+
   return (
     <div className="app">
       {view === 'landing' && (
         <Landing
           exiting={landingExiting}
           anticipating={anticipating}
-          onEnterStory={enterStory}
+          onEnterLive={enterLive}
+          onEnterDemo={enterDemo}
         />
       )}
 
-      {view === 'story' && (
+      {view === 'live' && <DiscussionStudio onBack={() => setView('landing')} />}
+
+      {view === 'demo' && (
         <div className="app__story">
           <header className="app__header">
             <p className="app__title">StoryOS</p>
-            <button
-              type="button"
-              className="app__start"
-              onClick={() => setRunning(true)}
-              disabled={running}
-            >
-              {running ? 'Watching…' : 'Watch again'}
-            </button>
+            <div className="app__header-actions">
+              <button type="button" className="app__ghost" onClick={() => setView('landing')}>
+                Home
+              </button>
+              <button
+                type="button"
+                className="app__start"
+                onClick={() => setRunning(true)}
+                disabled={running}
+              >
+                {running ? 'Watching…' : 'Watch again'}
+              </button>
+            </div>
           </header>
 
           <StoryTimeline running={running} onRunEnd={handleRunEnd} />

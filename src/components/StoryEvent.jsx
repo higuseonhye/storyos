@@ -9,8 +9,8 @@ const ROLE_LABEL = {
   final: 'Decision',
 }
 
-export function StoryEvent({ text, type, show }) {
-  const role = ROLE_LABEL[type] ?? null
+export function StoryEvent({ text, type, show, roleLabel }) {
+  const role = roleLabel ?? ROLE_LABEL[type] ?? null
 
   return (
     <article

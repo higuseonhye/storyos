@@ -1,21 +1,23 @@
 # StoryOS — project context
 
 > For **humans** and for **pasting into ChatGPT (or another AI)** to continue work.  
-> For run instructions only, see `README.md`.
+> For run instructions only, see `README.md`.  
+> **Self-contained explainer (no GitHub):** [`docs/CHATGPT_HANDOFF.md`](./docs/CHATGPT_HANDOFF.md)
 
 ---
 
 ## 1. What this is
 
 - **Name:** StoryOS  
-- **Type:** Cinematic **demo / prototype** (no backend, no API, no real AI calls)  
-- **Intent:** Feels like *watching something think in front of you* — the timeline unfolds as **one continuous story**, in order.
+- **Type:** (a) **Live panel** — React UI + **Express** API + **OpenAI**; three personas (**Strategist**, **Skeptic**, **Operator**) stream **in parallel**; user drives a **real discussion** with transcript. (b) **Scripted demo** — original cinematic timeline (fixed `STORY_SEQUENCE`, `tellStory()`), no AI.  
+- **Intent:** Portfolio of opinions and live reasoning — not a single chat line — while keeping the cinematic demo as a reference path.
 
 ---
 
 ## 2. Stack
 
-- React 18 + Vite 5  
+- React 18 + Vite 5 (proxies `/api` → local server in dev)  
+- Node **Express** + `openai` SDK (`server/`)  
 - Plain CSS (no UI component library)  
 - Fonts (Google): Cormorant Garamond (story tone), Outfit (UI)
 
@@ -25,7 +27,7 @@
 
 ```
 src/
-  App.jsx                 # view: landing | story; landing fade then story + `running`
+  App.jsx                 # view: landing | live | demo; DiscussionStudio + scripted StoryTimeline
   App.css
   index.css               # CSS variables, dark theme
   story/
