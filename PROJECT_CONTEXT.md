@@ -25,12 +25,14 @@
 
 ```
 src/
-  App.jsx                 # Title + Start button, `running` state
+  App.jsx                 # view: landing | story; landing fade then story + `running`
   App.css
   index.css               # CSS variables, dark theme
   story/
     tellStory.js          # Core: STORY_SEQUENCE, timing exports, tellStory()
   components/
+    Landing.jsx           # Intro page only (no story logic)
+    Landing.css
     StoryTimeline.jsx     # Pre-roll wait, then tellStory; renders `revealed` list
     StoryTimeline.css
     StoryEvent.jsx        # Single line per beat (fade + slight slide up)
@@ -55,10 +57,11 @@ src/
 
 **UI flow**
 
-1. User clicks **Start** → `running === true`  
-2. `StoryTimeline`’s `useEffect` runs an **async IIFE**: **`await wait(STORY_START_DELAY_MS)`** before `tellStory`, then `tellStory`  
-3. Each step: `onStep` → `setRevealed` appends one line  
-4. After the story (including **reflection** stillness): `onRunEnd()` → `running === false`, button enabled again  
+1. Default **`view === 'landing'`** — minimal intro; **Start a mission** or **Try the demo** triggers a short **landing fade-out**, then **`view === 'story'`** and **`running === true`** (timeline starts automatically).  
+2. On the story screen, **Start** sets `running === true` again after a run ends (replay).  
+3. `StoryTimeline`’s `useEffect` runs an **async IIFE**: **`await wait(STORY_START_DELAY_MS)`** before `tellStory`, then `tellStory`  
+4. Each step: `onStep` → `setRevealed` appends one line  
+5. After the story (including **reflection** stillness): `onRunEnd()` → `running === false`, button enabled again  
 
 ---
 
@@ -89,6 +92,7 @@ src/
 
 ## 6. Design direction
 
+- **Landing:** typography-led, ~42rem column, no cards; fade-out before story; same dark theme + fonts  
 - Dark background, generous spacing, minimal copy  
 - Beats: **fade in + slight move up** (~550ms, ease-out curve) in `StoryEvent.css`  
 - **Conflict:** break in the flow — extra top margin, higher-contrast border/gradient panel, subtle lift + **~1.03 scale** on reveal; longer **anticipation** pause than between normal beats (`ANTICIPATION_BEFORE_CONFLICT_MS`)  
@@ -114,13 +118,15 @@ Goal: a single sequential story timeline that feels like "watching something thi
 
 Stack: React 18, Vite 5, plain CSS.
 
+Shell: App.jsx uses view "landing" | "story"; Landing.jsx + Landing.css = quiet intro only (no story logic); CTA fades out then story view mounts and timeline auto-starts.
+
 Core code: src/story/tellStory.js
 - STORY_SEQUENCE: array of { text, type, delay }
 - wait(ms): single Promise + setTimeout
 - Exported pacing: STORY_START_DELAY_MS, MICRO_BETWEEN_MS, ANTICIPATION_BEFORE_CONFLICT_MS, PAUSE_BEFORE_FINAL_MS, ANTICIPATION_BEFORE_FINAL_MS, REFLECTION_AFTER_FINAL_MS (+ STORY_SEQUENCE delays)
 - tellStory(onStep, isCancelled): one async for-loop only — no parallel timers; micro-pauses; anticipation before Conflict and two-stage before Final; after the last step, REFLECTION_AFTER_FINAL_MS before returning (then onRunEnd)
 
-UI: App.jsx sets running=true on Start; StoryTimeline awaits STORY_START_DELAY_MS then tellStory; StoryEvent: fade/slide; Conflict = disruption; Final = slower settle + glow + reflection hold. Types: open | default | conflict | final.
+UI: App.jsx — landing first, then story shell; CTA fades into story and auto-starts timeline; Start replays. StoryTimeline awaits STORY_START_DELAY_MS then tellStory. StoryEvent: fade/slide; Conflict = disruption; Final = slower settle + glow + reflection hold. Types: open | default | conflict | final.
 
 Keep this architecture. Help me with: [your request here].
 Full notes: PROJECT_CONTEXT.md in the repo root.

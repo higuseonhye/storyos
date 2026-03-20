@@ -1,6 +1,6 @@
 # StoryOS
 
-Cinematic front-end demo: one **`STORY_SEQUENCE`**, one async **`tellStory()`** loop (no parallel timers). Click **Start** — a short pause, then beats in order with micro-gaps; **Conflict** reads as a **disruption**; **Final** uses slower entrance, soft luminance, extra space, then a **reflection pause** before the button returns (ending, not “last item”).
+Cinematic front-end demo: a **quiet landing** (“Watch AI think.”) → **Start a mission** / **Try the demo** fades into the story view, where one **`STORY_SEQUENCE`** and async **`tellStory()`** run (no parallel timers). **Conflict** reads as a **disruption**; **Final** uses slower entrance, glow, and a **reflection pause** before the button returns. Use **Start** on the story screen to replay.
 
 ```bash
 npm install
