@@ -1,12 +1,12 @@
 # StoryOS
 
-One continuous story: a single `STORY_SEQUENCE` and one async `tellStory()` loop (`async/await`, no parallel timers). Click **Start** and watch it unfold.
+Cinematic front-end demo: one **`STORY_SEQUENCE`**, one async **`tellStory()`** loop (no parallel timers). Click **Start** — a short pause, then beats appear in order with micro-gaps, longer holds on **Conflict** / **Critic**, and an extra breath before **Final Decision**.
 
 ```bash
 npm install
 npm run dev
 ```
 
-No backend, no API.
+No backend, no API, no real AI.
 
-**Context & AI handoff:** [`PROJECT_CONTEXT.md`](./PROJECT_CONTEXT.md)
+**Architecture & pacing details:** [`PROJECT_CONTEXT.md`](./PROJECT_CONTEXT.md)

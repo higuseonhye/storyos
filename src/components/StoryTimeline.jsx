@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { tellStory, wait } from '../story/tellStory'
+import { STORY_START_DELAY_MS, tellStory, wait } from '../story/tellStory'
 import { StoryEvent } from './StoryEvent'
 import './StoryTimeline.css'
 
@@ -16,7 +16,7 @@ export function StoryTimeline({ running, onRunEnd }) {
     setRevealed([])
 
     ;(async () => {
-      await wait(850)
+      await wait(STORY_START_DELAY_MS)
       if (!alive || token !== runTokenRef.current) return
 
       await tellStory(

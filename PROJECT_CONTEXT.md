@@ -29,9 +29,9 @@ src/
   App.css
   index.css               # CSS variables, dark theme
   story/
-    tellStory.js          # Core: STORY_SEQUENCE + tellStory()
+    tellStory.js          # Core: STORY_SEQUENCE, timing exports, tellStory()
   components/
-    StoryTimeline.jsx     # When running, runs tellStory; renders `revealed` list
+    StoryTimeline.jsx     # Pre-roll wait, then tellStory; renders `revealed` list
     StoryTimeline.css
     StoryEvent.jsx        # Single line per beat (fade + slight slide up)
     StoryEvent.css
@@ -49,13 +49,14 @@ src/
     - `type` — `'open' | 'default' | 'conflict' | 'final'` → CSS variant on `StoryEvent`  
     - `delay` — ms to wait **after** this step appears (before micro-gap / next step)  
   - **`wait(ms)`** — exported; single `Promise` + `setTimeout` for all delays  
+  - **Exports:** `STORY_START_DELAY_MS`, `MICRO_BETWEEN_MS`, `PAUSE_BEFORE_FINAL_MS` (documented in §5)  
   - **`tellStory(onStep, isCancelled)`** — one `for` loop: optional pause before **final**, then `onStep` → `await wait(step.delay)` → **micro pause** between steps (not after the last) — **no parallel playback**  
   - **`isCancelled()`** — handles unmount, React Strict Mode, and restarts  
 
 **UI flow**
 
 1. User clicks **Start** → `running === true`  
-2. `StoryTimeline`’s `useEffect` runs an **async IIFE**: short **`await wait(...)`** before `tellStory` (“thinking begins”), then `tellStory`  
+2. `StoryTimeline`’s `useEffect` runs an **async IIFE**: **`await wait(STORY_START_DELAY_MS)`** before `tellStory`, then `tellStory`  
 3. Each step: `onStep` → `setRevealed` appends one line  
 4. When finished: `onRunEnd()` → `running === false`, button enabled again  
 
@@ -71,14 +72,24 @@ src/
 6. Critic Agent (longer `delay`; extra pause before final is in the runner)  
 7. Final Decision  
 
-Timing: **`STORY_SEQUENCE`** delays, plus **`MICRO_BETWEEN_MS`**, **`PAUSE_BEFORE_FINAL_MS`** in `tellStory.js`, and the pre-story **`wait`** in `StoryTimeline.jsx`.
+**Timing constants** (see `tellStory.js`; import names match exports):
+
+| Constant | ms | Role |
+|----------|-----|------|
+| `STORY_START_DELAY_MS` | 850 | After **Start**, before first beat (`StoryTimeline`) |
+| `MICRO_BETWEEN_MS` | 400 | After each step’s `delay`, before the next (not after last) |
+| `PAUSE_BEFORE_FINAL_MS` | 900 | Before **`Final Decision`** is revealed |
+
+**`STORY_SEQUENCE` `delay` values (after line appears):** open/default beats 850–950ms; **Conflict** 2000ms; **Critic** 1800ms; **Final** 0ms.
 
 ---
 
 ## 6. Design direction
 
 - Dark background, generous spacing, minimal copy  
-- Beats: **fade in + slight move up** (`StoryEvent.css`)  
+- Beats: **fade in + slight move up** (~550ms, ease-out curve) in `StoryEvent.css`  
+- **Conflict:** bordered panel, soft background, extra top margin  
+- **Final:** slightly larger type, more padding, very subtle text glow  
 - Layout: mostly centered  
 
 ---
@@ -103,9 +114,10 @@ Stack: React 18, Vite 5, plain CSS.
 Core code: src/story/tellStory.js
 - STORY_SEQUENCE: array of { text, type, delay }
 - wait(ms): single Promise + setTimeout
+- Exported pacing: STORY_START_DELAY_MS, MICRO_BETWEEN_MS, PAUSE_BEFORE_FINAL_MS (+ STORY_SEQUENCE delays)
 - tellStory(onStep, isCancelled): one async for-loop only — no parallel timers; micro-pauses between steps; extra pause before the final beat
 
-UI: App.jsx sets running=true on Start; StoryTimeline awaits a short delay then tellStory; pushes each step onto revealed; StoryEvent renders text with fade/slide; types: open | default | conflict | final. Conflict and Critic use longer delays for pacing.
+UI: App.jsx sets running=true on Start; StoryTimeline awaits STORY_START_DELAY_MS then tellStory; pushes each step onto revealed; StoryEvent: fade/slide, conflict panel, final emphasis. Types: open | default | conflict | final.
 
 Keep this architecture. Help me with: [your request here].
 Full notes: PROJECT_CONTEXT.md in the repo root.

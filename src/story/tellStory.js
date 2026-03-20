@@ -4,10 +4,13 @@
  */
 
 /** ms between steps (after each step's own delay), for breathing room */
-const MICRO_BETWEEN_MS = 400
+export const MICRO_BETWEEN_MS = 400
 
 /** ms pause before the final beat appears */
-const PAUSE_BEFORE_FINAL_MS = 900
+export const PAUSE_BEFORE_FINAL_MS = 900
+
+/** ms after Start, before the first beat (used by StoryTimeline) */
+export const STORY_START_DELAY_MS = 850
 
 export function wait(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms))
