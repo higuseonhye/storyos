@@ -47,15 +47,15 @@ src/
   - **`STORY_SEQUENCE`**: `{ text, type, delay }[]`
     - `text` — line shown on screen  
     - `type` — `'open' | 'default' | 'conflict' | 'final'` → CSS variant on `StoryEvent`  
-    - `delay` — ms to wait **after** this step appears, before the next (sequential pacing)  
-  - **`wait(ms)`** — single `Promise` + `setTimeout` for all delays  
-  - **`tellStory(onStep, isCancelled)`** — `for` loop + `await wait(step.delay)` — **no parallel playback**  
+    - `delay` — ms to wait **after** this step appears (before micro-gap / next step)  
+  - **`wait(ms)`** — exported; single `Promise` + `setTimeout` for all delays  
+  - **`tellStory(onStep, isCancelled)`** — one `for` loop: optional pause before **final**, then `onStep` → `await wait(step.delay)` → **micro pause** between steps (not after the last) — **no parallel playback**  
   - **`isCancelled()`** — handles unmount, React Strict Mode, and restarts  
 
 **UI flow**
 
 1. User clicks **Start** → `running === true`  
-2. `StoryTimeline`’s `useEffect` runs `tellStory` inside an **async IIFE**  
+2. `StoryTimeline`’s `useEffect` runs an **async IIFE**: short **`await wait(...)`** before `tellStory` (“thinking begins”), then `tellStory`  
 3. Each step: `onStep` → `setRevealed` appends one line  
 4. When finished: `onRunEnd()` → `running === false`, button enabled again  
 
@@ -68,10 +68,10 @@ src/
 3. Analysis Agent  
 4. Conflict (emphasis, longer `delay`)  
 5. Strategy Agent  
-6. Critic Agent (longer `delay` → breathing room before the end)  
+6. Critic Agent (longer `delay`; extra pause before final is in the runner)  
 7. Final Decision  
 
-To change timing, edit **`STORY_SEQUENCE` in `tellStory.js` only**.
+Timing: **`STORY_SEQUENCE`** delays, plus **`MICRO_BETWEEN_MS`**, **`PAUSE_BEFORE_FINAL_MS`** in `tellStory.js`, and the pre-story **`wait`** in `StoryTimeline.jsx`.
 
 ---
 
@@ -103,9 +103,9 @@ Stack: React 18, Vite 5, plain CSS.
 Core code: src/story/tellStory.js
 - STORY_SEQUENCE: array of { text, type, delay }
 - wait(ms): single Promise + setTimeout
-- tellStory(onStep, isCancelled): one async for-loop only — no parallel timers
+- tellStory(onStep, isCancelled): one async for-loop only — no parallel timers; micro-pauses between steps; extra pause before the final beat
 
-UI: App.jsx sets running=true on Start; StoryTimeline runs tellStory and pushes each step onto revealed; StoryEvent renders text with fade/slide; types: open | default | conflict | final. Conflict and Critic use longer delays for pacing.
+UI: App.jsx sets running=true on Start; StoryTimeline awaits a short delay then tellStory; pushes each step onto revealed; StoryEvent renders text with fade/slide; types: open | default | conflict | final. Conflict and Critic use longer delays for pacing.
 
 Keep this architecture. Help me with: [your request here].
 Full notes: PROJECT_CONTEXT.md in the repo root.
