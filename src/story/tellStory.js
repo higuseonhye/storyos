@@ -46,40 +46,40 @@ export function wait(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
-/** Fixed demo: one concrete decision — AI note-taking startup (copy only; pacing unchanged). */
+/** Fixed demo: high-stakes commit decision (copy only; pacing unchanged). */
 export const STORY_SEQUENCE = [
   {
-    text: 'Should we build an AI note-taking app?',
+    text: 'We have six months of runway left. Should we commit to this idea?',
     type: 'open',
     delay: 830,
   },
   {
-    text: 'Research — Market is crowded with strong incumbents',
+    text: 'Research — Three major note apps shipped AI capture inside the same quarter we need to launch.',
     type: 'default',
     delay: 910,
   },
   {
-    text: 'Analysis — Most products compete on similar features',
+    text: 'Analysis — Our wedge sits on workflows two of them already own in the roadmap.',
     type: 'default',
     delay: 865,
   },
   {
-    text: 'High demand, but low differentiation',
+    text: 'Fundraising wants a broad story — survival needs one cohort that still uses us after week two.',
     type: 'conflict',
     delay: 2150,
   },
   {
-    text: 'Strategy — Focus on a niche or unique workflow',
+    text: 'Strategy — Bet one painful workflow and prove retention before we widen.',
     type: 'default',
     delay: 895,
   },
   {
-    text: 'Critic — Risk: low retention without clear value',
+    text: 'Critic — A loud general launch burns half our runway before we know if anyone stays.',
     type: 'default',
     delay: 1680,
   },
   {
-    text: 'Not recommended without a strong angle',
+    text: 'Ship one vertical. Clear 30% at day 30 — expand. Miss it — pivot by month four.',
     type: 'final',
     delay: 0,
   },

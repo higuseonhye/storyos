@@ -2,7 +2,7 @@
 
 **Live demo:** [storyos.vercel.app](https://storyos.vercel.app/)
 
-Cinematic demo: landing fades in; CTAs unlock after a short beat → **Start a mission** / **Try the demo** → pause, then fade → story. The fixed **`STORY_SEQUENCE`** walks through one **concrete decision** (e.g. *Should we build an AI note-taking app?* — research → tension → recommendation). Pacing is unchanged; **`tellStory()`** handles gaps, conflict beat, reflection, then **Watch again** eases in.
+Cinematic demo: landing fades in; CTAs unlock after a short beat → **Start a mission** / **Try the demo** → pause, then fade → story. The fixed **`STORY_SEQUENCE`** is a **high-stakes commit** (runway, real competitive timing, trade-off, conditional decision). Pacing unchanged; **`tellStory()`** handles gaps, conflict, reflection, then **Watch again** eases in.
 
 ```bash
 npm install
