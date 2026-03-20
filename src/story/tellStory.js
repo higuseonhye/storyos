@@ -46,14 +46,43 @@ export function wait(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
+/** Fixed demo: one concrete decision — AI note-taking startup (copy only; pacing unchanged). */
 export const STORY_SEQUENCE = [
-  { text: 'Mission Initialized', type: 'open', delay: 830 },
-  { text: 'Research Agent', type: 'default', delay: 910 },
-  { text: 'Analysis Agent', type: 'default', delay: 865 },
-  { text: 'Conflict', type: 'conflict', delay: 2150 },
-  { text: 'Strategy Agent', type: 'default', delay: 895 },
-  { text: 'Critic Agent', type: 'default', delay: 1680 },
-  { text: 'Final Decision', type: 'final', delay: 0 },
+  {
+    text: 'Should we build an AI note-taking app?',
+    type: 'open',
+    delay: 830,
+  },
+  {
+    text: 'Research — Market is crowded with strong incumbents',
+    type: 'default',
+    delay: 910,
+  },
+  {
+    text: 'Analysis — Most products compete on similar features',
+    type: 'default',
+    delay: 865,
+  },
+  {
+    text: 'High demand, but low differentiation',
+    type: 'conflict',
+    delay: 2150,
+  },
+  {
+    text: 'Strategy — Focus on a niche or unique workflow',
+    type: 'default',
+    delay: 895,
+  },
+  {
+    text: 'Critic — Risk: low retention without clear value',
+    type: 'default',
+    delay: 1680,
+  },
+  {
+    text: 'Not recommended without a strong angle',
+    type: 'final',
+    delay: 0,
+  },
 ]
 
 /**

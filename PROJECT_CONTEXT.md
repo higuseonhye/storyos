@@ -67,13 +67,15 @@ src/
 
 ## 5. Story order (current copy)
 
-1. Mission Initialized  
-2. Research Agent  
-3. Analysis Agent  
-4. Conflict (disruption: longer anticipation + hold, stronger panel treatment)  
-5. Strategy Agent  
-6. Critic Agent (longer `delay`; extra pause before final is in the runner)  
-7. Final Decision (slower entrance + glow in CSS; then **reflection** pause before UI “unlocks”)  
+Fixed **startup decision demo** (AI note-taking idea) — all strings live in `STORY_SEQUENCE` in `tellStory.js`:
+
+1. Question — *Should we build an AI note-taking app?* (`open`)  
+2. Research — crowded market / incumbents (`default`)  
+3. Analysis — similar feature sets (`default`)  
+4. Tension — high demand, low differentiation (`conflict` — disruption styling + pacing)  
+5. Strategy — niche or unique workflow (`default`)  
+6. Critic — retention / value risk (`default`)  
+7. Final — not recommended without a strong angle (`final` — reflection hold)  
 
 **Timing constants** (see `tellStory.js`; import names match exports):
 
@@ -148,7 +150,7 @@ Full notes: PROJECT_CONTEXT.md in the repo root.
 **Where StoryOS is today**
 
 - **Type:** Cinematic **front-end prototype / demo** — built to *feel* like watching a process think, not to ship production AI.  
-- **Scope:** No backend, no API, no live model calls. All beats come from **`STORY_SEQUENCE`** in `tellStory.js`.  
+- **Scope:** No backend, no API, no live model calls. All beats come from **`STORY_SEQUENCE`** in `tellStory.js` (currently a **startup idea evaluation** scenario to make the “think through a decision” idea tangible).  
 - **UX:** **Landing** → fade → **story view** with **`tellStory`** (anticipation, conflict disruption, final reflection pause). Replay via **Start** on the story screen.  
 - **Deploy:** Production build is on **[Vercel](https://storyos.vercel.app/)** (see §7).  
 - **Stability:** Core story runner is intentionally small and sequential; docs and timing constants are aligned in this file.
