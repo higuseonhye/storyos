@@ -1,0 +1,1 @@
+Screenshots for GitHub / Gumroad live in **`public/marketing/`** (see **[../SCREENSHOTS.md](../SCREENSHOTS.md)**). Add optional real captures here if you prefer to keep marketing assets under `docs/` only — then update paths in **README.md**.

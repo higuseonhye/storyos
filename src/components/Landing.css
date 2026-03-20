@@ -50,6 +50,12 @@
   margin-bottom: 1.75rem;
 }
 
+.landing__mode-badge {
+  letter-spacing: 0.2em;
+  color: var(--accent);
+  font-weight: 500;
+}
+
 .landing__kicker {
   font-family: var(--font-ui);
   font-size: 0.8125rem;

@@ -69,6 +69,12 @@
   color: var(--text-faint);
 }
 
+.discussion-studio__mode-badge {
+  letter-spacing: 0.2em;
+  color: var(--accent);
+  font-weight: 500;
+}
+
 .discussion-studio__tagline {
   font-size: 0.9375rem;
   font-weight: 300;
@@ -99,6 +105,17 @@
   font-weight: 400;
   color: rgba(232, 196, 168, 0.92);
   line-height: 1.45;
+}
+
+.discussion-studio__stream-fallback {
+  margin-top: 1rem;
+  padding: 0.75rem 1rem;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: var(--text-soft);
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid var(--border);
+  border-radius: 4px;
 }
 
 .discussion-studio__meta {

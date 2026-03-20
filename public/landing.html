@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>StoryOS — Multi-agent AI apps in minutes</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #0a0c0f;
+        --panel: #12161c;
+        --border: #2a3140;
+        --text: #e8eaef;
+        --muted: #8b93a7;
+        --accent: #7ee787;
+        --accent-dim: #4ad66d;
+        --warn: #f5a623;
+        --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+        --font-sans: 'IBM Plex Sans', system-ui, sans-serif;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--font-sans);
+        line-height: 1.55;
+      }
+      .wrap {
+        max-width: 880px;
+        margin: 0 auto;
+        padding: 2.5rem 1.25rem 4rem;
+      }
+      .term-bar {
+        font-family: var(--font-mono);
+        font-size: 0.7rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--muted);
+        border-bottom: 1px solid var(--border);
+        padding-bottom: 0.75rem;
+        margin-bottom: 2rem;
+      }
+      .term-bar span {
+        color: var(--accent);
+      }
+      h1 {
+        font-family: var(--font-mono);
+        font-size: clamp(1.65rem, 4vw, 2.35rem);
+        font-weight: 600;
+        line-height: 1.2;
+        margin: 0 0 1rem;
+        letter-spacing: -0.02em;
+      }
+      .lede {
+        font-size: 1.125rem;
+        color: var(--muted);
+        max-width: 38rem;
+        margin-bottom: 2rem;
+      }
+      .cta-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        align-items: center;
+        margin-bottom: 2.5rem;
+      }
+      a.btn {
+        font-family: var(--font-mono);
+        font-size: 0.8rem;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.65rem 1.1rem;
+        border-radius: 4px;
+        border: 1px solid var(--border);
+        transition:
+          border-color 0.2s,
+          color 0.2s,
+          background 0.2s;
+      }
+      a.btn--primary {
+        background: var(--accent-dim);
+        color: #041208;
+        border-color: var(--accent-dim);
+        font-weight: 600;
+      }
+      a.btn--primary:hover {
+        background: var(--accent);
+      }
+      a.btn--ghost {
+        color: var(--text);
+      }
+      a.btn--ghost:hover {
+        border-color: var(--muted);
+        color: var(--accent);
+      }
+      a.btn--lemon {
+        color: #ffc233;
+        border-color: #5c4a1a;
+        background: rgba(255, 194, 51, 0.08);
+      }
+      a.btn--lemon:hover {
+        border-color: #ffc233;
+        color: #ffe08a;
+      }
+      .price {
+        font-family: var(--font-mono);
+        font-size: 0.85rem;
+        color: var(--warn);
+        margin-left: 0.25rem;
+      }
+      .panel {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        padding: 1.25rem 1.35rem;
+        margin-bottom: 2rem;
+      }
+      .panel h2 {
+        font-family: var(--font-mono);
+        font-size: 0.75rem;
+        font-weight: 600;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin: 0 0 1rem;
+      }
+      ul.features {
+        margin: 0;
+        padding-left: 1.1rem;
+        color: var(--text);
+      }
+      ul.features li {
+        margin-bottom: 0.5rem;
+      }
+      ul.features code {
+        font-family: var(--font-mono);
+        font-size: 0.82em;
+        background: rgba(0, 0, 0, 0.35);
+        padding: 0.12em 0.35em;
+        border-radius: 3px;
+        color: var(--accent);
+      }
+      .shot {
+        margin: 0 0 2rem;
+        padding: 0;
+      }
+      .shot figcaption code {
+        color: var(--accent);
+      }
+      .faq details {
+        border-bottom: 1px solid var(--border);
+        padding: 0.85rem 0;
+      }
+      .faq summary {
+        font-family: var(--font-mono);
+        font-size: 0.8rem;
+        cursor: pointer;
+        color: var(--text);
+      }
+      .faq p {
+        margin: 0.65rem 0 0;
+        font-size: 0.9rem;
+        color: var(--muted);
+      }
+      footer {
+        margin-top: 3rem;
+        font-family: var(--font-mono);
+        font-size: 0.7rem;
+        color: var(--muted);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="term-bar">user@machine <span>~/storyos</span> $ ./sell-readme.sh — ok</div>
+
+      <h1>Build multi-agent AI apps.<br />In minutes, not months.</h1>
+      <p class="lede">
+        StoryOS is a developer boilerplate: parallel agents, NDJSON streaming, OpenAI + Anthropic, optional MCP
+        tools, bounded self-refine, and user-owned pinned memory — ready to deploy.
+      </p>
+
+      <div class="cta-row">
+        <a
+          class="btn btn--primary"
+          href="https://gumroad.com/l/storyos-template"
+          target="_blank"
+          rel="noreferrer"
+          title="Replace storyos-template with your Gumroad product slug"
+          >Buy on Gumroad</a>
+        <a
+          class="btn btn--lemon"
+          href="https://lemonsqueezy.com"
+          target="_blank"
+          rel="noreferrer"
+          title="Create a product on Lemon Squeezy and replace this URL with your checkout link"
+          >Buy on Lemon Squeezy</a>
+        <span class="price">One-time · $29–$49 <span style="color: var(--muted)">(set your price)</span></span>
+        <a class="btn btn--ghost" href="/">Open live app</a>
+        <a class="btn btn--ghost" href="https://storyos.vercel.app" target="_blank" rel="noreferrer">Demo</a>
+        <a
+          class="btn btn--ghost"
+          href="https://discord.gg"
+          target="_blank"
+          rel="noreferrer"
+          title="Replace with your Discord invite"
+          >Discord</a>
+      </div>
+
+      <figure class="shot" aria-label="Product screenshots placeholder">
+        <img
+          src="/marketing/panel-placeholder.svg"
+          alt="StoryOS live panel — replace with a real screenshot"
+          width="960"
+          height="420"
+          style="max-width: 100%; height: auto; border: 1px solid var(--border); border-radius: 6px"
+        />
+        <figcaption style="margin-top: 0.65rem; font-size: 0.75rem; color: var(--muted); font-family: var(--font-mono)">
+          Placeholder · also see <code>/marketing/home-placeholder.svg</code> and <code>env-placeholder.svg</code>
+        </figcaption>
+      </figure>
+
+      <div class="panel">
+        <h2>Included</h2>
+        <ul class="features">
+          <li>3-agent panel · parallel streams · React + Express</li>
+          <li><code>LLM_PROVIDER=openai | anthropic</code> — same tool schema</li>
+          <li>MCP stdio integration (long-running Node; not Vercel serverless)</li>
+          <li><code>SELF_IMPROVE_MAX_ROUNDS</code> 0–3 · tool loop caps</li>
+          <li>Vercel-ready API routes + env validation for local dev</li>
+        </ul>
+      </div>
+
+      <div class="panel faq">
+        <h2>FAQ</h2>
+        <details>
+          <summary>Is this the same as the public demo?</summary>
+          <p>
+            The demo is the stock experience. Your purchase is the full source tree, docs, and license to use it
+            in your own products (see LICENSE — not for reselling as another template).
+          </p>
+        </details>
+        <details>
+          <summary>Can I use Claude instead of OpenAI?</summary>
+          <p>Yes. Set <code>LLM_PROVIDER=anthropic</code> and <code>ANTHROPIC_API_KEY</code> in <code>.env</code>.</p>
+        </details>
+        <details>
+          <summary>Does MCP work on Vercel?</summary>
+          <p>
+            No — stdio MCP needs a persistent process. Run <code>server/index.js</code> on Railway, Render, Fly, or
+            locally for MCP.
+          </p>
+        </details>
+        <details>
+          <summary>Gumroad or Lemon Squeezy?</summary>
+          <p>
+            Either — both work for selling a source zip. Replace the button URLs in this file with your checkout
+            links.
+          </p>
+        </details>
+      </div>
+
+      <footer>StoryOS · Multi-Agent AI Discussion Framework · customize <code>public/landing.html</code> for your SKU</footer>
+    </div>
+  </body>
+</html>

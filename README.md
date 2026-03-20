@@ -1,65 +1,152 @@
-# StoryOS
+# StoryOS — Multi-Agent AI Discussion Framework
 
-**Live demo:** [storyos.vercel.app](https://storyos.vercel.app/)
+> Ship a multi-agent AI app in under 10 minutes.
 
-StoryOS is two experiences:
+**[Live demo](https://storyos.vercel.app)** · **[Gumroad](https://gumroad.com/l/storyos-template)** · **[Lemon Squeezy](https://lemonsqueezy.com)** (create a product and paste your URL) · **[Discord](https://discord.gg)** (replace with your invite)
 
-1. **Live panel** — multi-agent discussion on a small **Express** API with **pluggable LLMs** (`LLM_PROVIDER=openai` or `anthropic`), **function/tool calling** (built-ins + **[MCP](https://modelcontextprotocol.io/)** tools from stdio servers), optional **bounded self-refine** (`SELF_IMPROVE_MAX_ROUNDS`), and **pinned insights** you can add/remove (no opaque “model memory” lock-in).
-2. **Scripted demo** — the original cinematic timeline: fixed **`STORY_SEQUENCE`**, **`tellStory()`** loop, typed beats (Brief, Tension, Critic, Decision).
+StoryOS is an **Express + React** boilerplate: three agents answer **in parallel**, stream **NDJSON** to the browser, support **OpenAI and Anthropic**, optional **MCP tools**, **bounded self-refinement**, and **pinned insights** the user controls.
 
-## Quick start (full stack)
+---
+
+## What you get
+
+- Multi-agent discussion panel (3 agents, parallel execution)
+- Pluggable LLMs (OpenAI + Anthropic, same codebase)
+- MCP tool integration (stdio servers on long-running Node hosts)
+- Bounded self-refinement loop (0–3 rounds via `SELF_IMPROVE_MAX_ROUNDS`)
+- Pinned insights (no opaque model memory lock-in)
+- Vercel-ready deployment (API routes included; MCP is local/long-running only)
+
+---
+
+## 5-minute setup
 
 ```bash
+git clone <your-repo-url> storyos && cd storyos
 npm install
 cp .env.example .env
-# Add OPENAI_API_KEY to .env
+# Edit .env — set OPENAI_API_KEY (or Anthropic — see .env.example)
 
 npm run dev:all
 ```
 
-- **Web:** Vite (default port `5173`) — proxies `/api` → `http://localhost:3001`
-- **API:** `node server/index.js` — `PORT` default `3001`
+- **App:** http://localhost:5173 (Vite proxies `/api` → `http://localhost:3001`)
+- **API only:** `npm run server` → http://localhost:3001
 
-Frontend only:
+**Placeholder screenshots** (swap for real PNG/WebP before launch — see **[docs/SCREENSHOTS.md](./docs/SCREENSHOTS.md)**):
 
-```bash
-npm run dev
+| Home | Live panel | Env hint (docs) |
+|------|------------|-----------------|
+| ![Home placeholder](public/marketing/home-placeholder.svg) | ![Panel placeholder](public/marketing/panel-placeholder.svg) | ![Env placeholder](public/marketing/env-placeholder.svg) |
+
+See **[SETUP_GUIDE.md](./SETUP_GUIDE.md)** for buyers and **[CUSTOMIZATION.md](./CUSTOMIZATION.md)** to change agents, tools, and prompts. **Before you sell:** **[docs/PUBLISH_CHECKLIST.md](./docs/PUBLISH_CHECKLIST.md)**.
+
+---
+
+## Architecture
+
+```mermaid
+flowchart LR
+  subgraph browser [Browser]
+    UI[React UI]
+  end
+  subgraph api [Node API]
+    EX[Express]
+    LLM[OpenAI / Anthropic]
+    MCP[MCP stdio optional]
+  end
+  UI -->|POST /api/discuss/stream NDJSON| EX
+  EX --> LLM
+  EX --> MCP
 ```
 
-Without the API, **Open live panel** will show an offline notice; **Watch scripted demo** still works.
+- **UI:** `src/components/DiscussionStudio.jsx` — health check, stream consumer, pinned insights.
+- **API factory:** `server/createApp.js` — CORS, tools, `/api/health`, discuss route.
+- **Agents & prompts:** `server/agents.js`, shared rules in `server/discussStream.js`.
+- **Built-in tools:** `server/tools/builtin.js`.
+- **Vercel:** `api/*.js` + `server/getApp.js` reuse the same app (no MCP on serverless).
 
-## Tools, MCP, providers
+---
 
-- **Built-in tools:** `storyos_datetime`, `storyos_calculator`, `storyos_suggest_memory` (emits a suggestion the UI can keep or delete via **Pinned insights**).
-- **MCP:** set **`MCP_SERVERS`** to a JSON array of `{ "id", "command", "args"?, "cwd"? }` — each server’s tools are exposed to the models with stable names `mcp__<id>__<tool>`. MCP `callTool` requests are **serialized** per process to avoid stdio races when three agents run in parallel.
-- **Switch models:** **`LLM_PROVIDER=openai`** (default, needs `OPENAI_API_KEY`) or **`LLM_PROVIDER=anthropic`** (needs `ANTHROPIC_API_KEY`). Same tool schema is mapped for Anthropic’s `input_schema`.
-- **Self-improvement:** **`SELF_IMPROVE_MAX_ROUNDS`** (0–3) runs an extra tightening pass per agent after the first draft (bounded — not unbounded recursive self-modification).
+## Customization (quick pointers)
 
-See **`.env.example`** for all variables.
+| Goal | Where |
+|------|--------|
+| New agent persona | `server/agents.js` + mirror labels in `DiscussionStudio.jsx` |
+| New built-in tool | `server/tools/builtin.js` (handler + OpenAI schema) |
+| MCP server | `MCP_SERVERS` in `.env` — see `.env.example` |
+| Panel / transcript prompts | `server/discussStream.js` (`streamOne` system string) |
+
+Full walkthrough: **[CUSTOMIZATION.md](./CUSTOMIZATION.md)**.
+
+---
+
+## Scripts
+
+| Command | Purpose |
+|---------|---------|
+| `npm run dev` | Vite only |
+| `npm run dev:all` | API + Vite |
+| `npm run server` | API only |
+| `npm run build` | Production UI → `dist/` |
+| `npm run lint` / `npm run ci` | ESLint + build |
+
+---
 
 ## Production
 
-### Same-site deploy (Vercel: frontend + API together)
+- **Same-origin (Vercel):** set secrets in the dashboard (`OPENAI_API_KEY`, etc.). Do **not** set `VITE_API_BASE_URL` if the UI calls `/api` on the same host. **`MCP_SERVERS` is ignored on Vercel** (stdio needs a long-running process).
+- **Split deploy:** host `server/index.js` elsewhere, set `CORS_ORIGIN`, point the UI with `VITE_API_BASE_URL`.
 
-This repo includes **`api/health.js`**, **`api/agents.js`**, and **`api/discuss/stream.js`**, which delegate to the same Express app via **`server/getApp.js`**.
+Details remain in deployment comments inside **[SETUP_GUIDE.md](./SETUP_GUIDE.md)**.
 
-**Why `vercel.json` uses `builds`:** Plain **Vite-only** projects on Vercel only run `vite build` and **do not** ship root **`/api/*.js`** as Functions ([Vite on Vercel — Vercel Functions](https://vercel.com/docs/frameworks/vite) recommends Nitro or another full-stack layer). StoryOS uses the **legacy `builds`** array: **`@vercel/node`** for each API file + **`@vercel/static-build`** for `dist/`, so `/api/*` actually deploys.
+---
 
-1. Connect the repo to **Vercel**. Leave **Root Directory** empty. If the dashboard warns that **Project Settings are overridden** by `vercel.json` `builds`, that is expected.
-2. **Secrets:** do **not** rely on uploading a `.env` file — Vercel does not inject it into serverless Functions. In **Settings → Environment Variables** (Production + Preview as needed), set **`OPENAI_API_KEY`**, and optionally **`OPENAI_MODEL`**, **`LLM_PROVIDER`**, **`ANTHROPIC_API_KEY`**, **`ANTHROPIC_MODEL`** (same meanings as `.env.example`).
-3. **Do not set `VITE_API_BASE_URL`** for this setup — the browser should call **`/api/...`** on the **same** deployment origin.
-4. Redeploy. **`MCP_SERVERS` is ignored on Vercel** (stdio MCP needs a long-running Node process); use **Railway/Render/Fly** for the full API + MCP if you need that.
+## Marketing page (optional)
 
-**Limits:** Long panel streams may hit **serverless max duration** (e.g. 10s on Hobby, up to 60s with Pro and `maxDuration` in each `api/*.js`). Upgrade plan or host the API elsewhere if hits time out.
+Static landing (dark / dev aesthetic): **[`/landing.html`](./public/landing.html)** — after `npm run dev`, open http://localhost:5173/landing.html
 
-### Split deploy (static + API elsewhere)
+---
 
-- **Static app:** `npm run build` → deploy `dist/` anywhere.
-- **API:** run `server/index.js` on Railway, Render, Fly, etc. Set keys, **`CORS_ORIGIN`** to your site, optional **`MCP_SERVERS`**.
-- **Frontend env:** set **`VITE_API_BASE_URL`** to that API origin (no trailing slash).
+## FAQ
 
-**Checks:** `npm run lint` · `npm run ci` (lint + build).
+**Can I use this on Vercel’s free plan?**  
+Yes for the UI + API routes; watch serverless **max duration** on long streams. MCP needs a non-serverless host.
 
-**Research & governance lens:** [`docs/RESEARCH_AND_GOVERNANCE.md`](./docs/RESEARCH_AND_GOVERNANCE.md)
+**Does it work with models other than OpenAI?**  
+Yes — set `LLM_PROVIDER=anthropic` and `ANTHROPIC_API_KEY` (see `.env.example`).
 
-**Architecture & pacing (demo):** [`PROJECT_CONTEXT.md`](./PROJECT_CONTEXT.md) · **Paste for ChatGPT:** [`docs/CHATGPT_HANDOFF.md`](./docs/CHATGPT_HANDOFF.md)
+**Can I use this in a commercial project?**  
+Yes. See **[LICENSE](./LICENSE)** — commercial use is allowed; **resale/redistribution of the source as a template product is not**. This is not legal advice; use **[docs/PUBLISH_CHECKLIST.md](./docs/PUBLISH_CHECKLIST.md)** and consult a lawyer if you need custom terms.
+
+**Gumroad or Lemon Squeezy?**  
+Either works for digital delivery (zip + license). StoryOS doesn’t depend on one vendor — link whichever checkout you use in **README** and **`public/landing.html`**.
+
+**What if I forget my API key?**  
+Local: the server exits on startup with a list of missing variables. The UI reads `/api/health` and shows **which** key is missing when `ai: false`.
+
+**What is AgentOS mode?**  
+Optional hook: set `STORYOS_MODE=agentOS` and `AGENTOS_WEBHOOK_URL` to POST each finished panel round to your approval queue. See **[docs/AGENTOS.md](./docs/AGENTOS.md)**.
+
+---
+
+## More docs
+
+- **[SETUP_GUIDE.md](./SETUP_GUIDE.md)** — install, checklist, common mistakes  
+- **[CUSTOMIZATION.md](./CUSTOMIZATION.md)** — agents, tools, prompts  
+- **[docs/AGENTOS.md](./docs/AGENTOS.md)** — AgentOS webhook + env  
+- **[docs/SCREENSHOTS.md](./docs/SCREENSHOTS.md)** — product-page captures  
+- **[docs/PUBLISH_CHECKLIST.md](./docs/PUBLISH_CHECKLIST.md)** — pre-launch for sellers  
+- **[PROJECT_CONTEXT.md](./PROJECT_CONTEXT.md)** — narrative demo context  
+- **[docs/RESEARCH_AND_GOVERNANCE.md](./docs/RESEARCH_AND_GOVERNANCE.md)** — governance lens  
+
+---
+
+## AgentOS mode (optional)
+
+Use StoryOS as a **live demo shell** that forwards each completed panel round to your queue:
+
+1. **UI:** set **`VITE_MODE=agentOS`** in `.env` — the live panel shows an **AgentOS** badge (rebuild the frontend after changing).
+2. **Server:** set **`STORYOS_MODE=agentOS`**, **`AGENTOS_WEBHOOK_URL`**, and optionally **`AGENTOS_WEBHOOK_SECRET`** — after the NDJSON stream finishes, the API **POSTs** JSON with `topic`, `userMessage`, `panelMemory`, `agents` (final text per id), `provider`, `model`, `at`.
+
+Details and payload shape: **[docs/AGENTOS.md](./docs/AGENTOS.md)**.

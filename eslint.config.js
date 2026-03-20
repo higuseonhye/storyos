@@ -4,8 +4,12 @@ import reactHooks from 'eslint-plugin-react-hooks'
 import globals from 'globals'
 
 export default [
-  { ignores: ['dist/**', 'node_modules/**'] },
+  { ignores: ['dist/**', 'node_modules/**', '**/*.d.ts'] },
   js.configs.recommended,
+  {
+    // Applies globally so eslint-plugin-react always knows the version (stops "version not specified" warning).
+    settings: { react: { version: '18.2.0' } },
+  },
   react.configs.flat.recommended,
   react.configs.flat['jsx-runtime'],
   {
@@ -23,7 +27,6 @@ export default [
       'react/prop-types': 'off',
       'no-unused-vars': ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
     },
-    settings: { react: { version: 'detect' } },
   },
   {
     files: ['server/**/*.js', 'api/**/*.js'],

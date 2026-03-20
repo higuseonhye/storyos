@@ -18,12 +18,16 @@ export function Landing({ anticipating, onEnterLive, onEnterDemo }) {
   }, [])
 
   const locked = anticipating || !ctaReady
+  const agentOsShell = import.meta.env.VITE_MODE === 'agentOS'
 
   return (
     <div className={`landing ${awake ? 'landing--awake' : ''}`}>
       <div className="landing__inner">
         <section className="landing__hero" aria-labelledby="landing-headline">
-          <p className="landing__wordmark">StoryOS</p>
+          <p className="landing__wordmark">
+            StoryOS
+            {agentOsShell ? <span className="landing__mode-badge"> · AgentOS shell</span> : null}
+          </p>
           <p className="landing__kicker">
             Not one answer — a portfolio of voices reasoning in parallel, live.
           </p>

@@ -1,5 +1,8 @@
 import 'dotenv/config'
+import { validateEnvOrExit } from './validateEnv.js'
 import { closeMcpIfAny, createStoryOsApp } from './createApp.js'
+
+validateEnvOrExit()
 
 const app = await createStoryOsApp()
 
@@ -15,16 +18,5 @@ if (process.env.VERCEL !== '1') {
 }
 
 app.listen(PORT, () => {
-  const provider = (process.env.LLM_PROVIDER || 'openai').toLowerCase()
-  const aiReady =
-    (provider !== 'anthropic' && !!process.env.OPENAI_API_KEY) ||
-    (provider === 'anthropic' && !!process.env.ANTHROPIC_API_KEY)
   console.log(`StoryOS API http://localhost:${PORT}`)
-  if (!aiReady) {
-    console.warn(
-      provider === 'anthropic'
-        ? 'ANTHROPIC_API_KEY missing — panel disabled'
-        : 'OPENAI_API_KEY missing — panel disabled',
-    )
-  }
 })

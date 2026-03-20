@@ -61,7 +61,27 @@ export async function runParallelAgentStreams(runtime, body, writeLine) {
 
   const mcpToolCount = Math.max(0, runtime.toolCount - 3)
 
-  await writeLine({
+  /** Final text per agent (mirrors UI: reset on refine_start). */
+  const agentOutputs = Object.fromEntries(AGENTS.map((a) => [a.id, '']))
+
+  async function writeLineTracked(obj) {
+    if (obj && typeof obj === 'object') {
+      if (obj.type === 'refine_start' && obj.id && agentOutputs[obj.id] !== undefined) {
+        agentOutputs[obj.id] = ''
+      }
+      if (
+        obj.type === 'token' &&
+        obj.id &&
+        typeof obj.text === 'string' &&
+        agentOutputs[obj.id] !== undefined
+      ) {
+        agentOutputs[obj.id] = (agentOutputs[obj.id] || '') + obj.text
+      }
+    }
+    await writeLine(obj)
+  }
+
+  await writeLineTracked({
     type: 'meta',
     provider: runtime.provider,
     model: runtime.model,
@@ -96,10 +116,17 @@ ${panelMemory.map((x) => `- ${x}`).join('\n')}`
       agent,
       system,
       userPayload,
-      writeLine,
+      writeLine: writeLineTracked,
     })
   }
 
   await Promise.all(AGENTS.map((agent) => streamOne(agent)))
-  await writeLine({ type: 'done' })
+  await writeLineTracked({ type: 'done' })
+
+  return {
+    agentOutputs,
+    topic,
+    userMessage,
+    panelMemory,
+  }
 }

@@ -12,6 +12,42 @@ function mapAccentToStoryType(accent) {
   return 'default'
 }
 
+/** User-facing copy for fetch/stream failures (avoid blank confusion + raw stack traces). */
+function formatStreamError(err) {
+  if (err?.name === 'AbortError') return null
+  if (!(err instanceof Error))
+    return 'Something went wrong. Check the backend and try again.'
+  const m = err.message || ''
+  const lower = m.toLowerCase()
+  if (
+    lower.includes('failed to fetch') ||
+    lower.includes('networkerror') ||
+    lower.includes('load failed') ||
+    lower.includes('network request failed')
+  ) {
+    return 'Could not reach the API. Run npm run dev:all (or npm run server) and ensure the Vite proxy or VITE_API_BASE_URL points at it.'
+  }
+  if (
+    lower.includes('unauthorized') ||
+    lower.includes('401') ||
+    lower.includes('invalid api key') ||
+    lower.includes('incorrect api key')
+  ) {
+    return 'The provider rejected the API key. Set OPENAI_API_KEY or ANTHROPIC_API_KEY (and LLM_PROVIDER) in .env or your host’s environment, then restart.'
+  }
+  if (lower.includes('429') || lower.includes('rate limit')) {
+    return 'The model provider rate-limited this request. Wait briefly and try again.'
+  }
+  if (lower.includes('quota') || lower.includes('insufficient_quota')) {
+    return 'Billing or quota issue with your AI provider — check the provider dashboard.'
+  }
+  if (lower.includes('stream error') || m === 'Stream error') {
+    return 'The live stream was interrupted before completion. Nothing was added to the transcript — send your message again.'
+  }
+  const trimmed = m.length > 220 ? `${m.slice(0, 220)}…` : m
+  return trimmed.trim() ? trimmed : 'Something went wrong. Try again.'
+}
+
 function loadLearnings() {
   try {
     const raw = sessionStorage.getItem('storyos_learnings')
@@ -180,7 +216,8 @@ export function DiscussionStudio({ onBack }) {
       ])
     } catch (e) {
       if (e?.name === 'AbortError') return
-      setError(e instanceof Error ? e.message : 'Something went wrong')
+      const msg = formatStreamError(e)
+      if (msg) setError(msg)
     } finally {
       setStreaming(false)
       setActiveAgents({})
@@ -193,6 +230,13 @@ export function DiscussionStudio({ onBack }) {
   }, [])
 
   const aiReady = health?.ai === true
+  const missingKeys = Array.isArray(health?.missingEnv) ? health.missingEnv : []
+  const configHint =
+    typeof health?.configHint === 'string' && health.configHint.trim()
+      ? health.configHint.trim()
+      : null
+
+  const agentOsShell = import.meta.env.VITE_MODE === 'agentOS'
 
   return (
     <div className="discussion-studio">
@@ -201,22 +245,51 @@ export function DiscussionStudio({ onBack }) {
           <button type="button" className="discussion-studio__back" onClick={onBack}>
             ← Home
           </button>
-          <p className="discussion-studio__title">StoryOS · Live panel</p>
+          <p className="discussion-studio__title">
+          StoryOS · Live panel
+          {agentOsShell ? (
+            <span className="discussion-studio__mode-badge" title="AgentOS demo shell">
+              {' '}
+              · AgentOS
+            </span>
+          ) : null}
+        </p>
         </div>
         <p className="discussion-studio__tagline" id="panel-desc">
           Three independent voices — one transcript. Steer the debate; watch it unfold in real time.
         </p>
         {health && !aiReady ? (
           <p className="discussion-studio__warn" role="status">
-            AI backend offline — run <code>npm run dev:all</code> or <code>npm run server</code> and set{' '}
-            {health.provider === 'anthropic' ? (
+            {missingKeys.length > 0 ? (
               <>
-                <code>ANTHROPIC_API_KEY</code> (with <code>LLM_PROVIDER=anthropic</code>)
+                <strong>API key not configured.</strong> Set{' '}
+                {missingKeys.map((k, i) => (
+                  <span key={k}>
+                    {i > 0 ? ', ' : null}
+                    <code>{k}</code>
+                  </span>
+                ))}{' '}
+                in <code>.env</code> (local) or your host&apos;s environment variables, then restart / redeploy.
               </>
             ) : (
-              <code>OPENAI_API_KEY</code>
-            )}{' '}
-            in <code>.env</code>.
+              <>
+                AI backend unavailable — run <code>npm run dev:all</code> or <code>npm run server</code> and set{' '}
+                {health.provider === 'anthropic' ? (
+                  <>
+                    <code>ANTHROPIC_API_KEY</code> (with <code>LLM_PROVIDER=anthropic</code>)
+                  </>
+                ) : (
+                  <code>OPENAI_API_KEY</code>
+                )}{' '}
+                in <code>.env</code>.
+              </>
+            )}
+            {configHint ? (
+              <>
+                <br />
+                <span className="discussion-studio__warn-detail">{configHint}</span>
+              </>
+            ) : null}
             {typeof health.httpStatus === 'number' ? (
               <>
                 <br />
@@ -234,12 +307,16 @@ export function DiscussionStudio({ onBack }) {
                 <span className="discussion-studio__warn-detail">Network: {health.networkError}</span>
               </>
             ) : null}
-            {health.ai === false && health.ok !== false && !health.httpStatus ? (
+            {health.ai === false &&
+            health.ok !== false &&
+            !health.httpStatus &&
+            missingKeys.length === 0 ? (
               <>
                 <br />
                 <span className="discussion-studio__warn-detail">
-                  API replied but <code>ai: false</code> — check Vercel env: <code>OPENAI_API_KEY</code>, and{' '}
-                  <code>LLM_PROVIDER=openai</code> if using OpenAI. Redeploy after changing variables.
+                  API replied but <code>ai: false</code> — confirm env vars on the server (e.g.{' '}
+                  <code>OPENAI_API_KEY</code> or <code>ANTHROPIC_API_KEY</code> + <code>LLM_PROVIDER</code>) and
+                  redeploy after changes.
                 </span>
               </>
             ) : null}
@@ -350,6 +427,12 @@ export function DiscussionStudio({ onBack }) {
             </div>
           ))}
         </div>
+        {error && !streaming ? (
+          <p className="discussion-studio__stream-fallback" role="status">
+            Stream stopped — any text above may be incomplete. See the message below, fix the issue, then send
+            again. Your last message was not added to the transcript.
+          </p>
+        ) : null}
       </section>
 
       <section className="discussion-studio__transcript" aria-label="Discussion transcript">

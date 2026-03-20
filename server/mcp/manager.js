@@ -1,5 +1,6 @@
 import { Client } from '@modelcontextprotocol/sdk/client/index.js'
 import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js'
+import { debug } from '../logger.js'
 
 function sanitizeKey(s) {
   return String(s).replace(/[^a-zA-Z0-9_-]/g, '_')
@@ -129,7 +130,7 @@ export async function initMcpCluster() {
   if (!Array.isArray(configs) || configs.length === 0) return null
   try {
     const cluster = await McpCluster.connectAll(configs)
-    console.log(`MCP: ${cluster.openAiTools.length} tool(s) from ${configs.length} server(s)`)
+    debug(`MCP: ${cluster.openAiTools.length} tool(s) from ${configs.length} server(s)`)
     return cluster
   } catch (e) {
     console.error('MCP connection failed:', e)

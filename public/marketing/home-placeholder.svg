@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="420" viewBox="0 0 960 420" role="img" aria-label="Placeholder: replace with home screen screenshot">
+  <defs>
+    <linearGradient id="hbg" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#0d0a0c"/>
+      <stop offset="100%" style="stop-color:#1a1518"/>
+    </linearGradient>
+  </defs>
+  <rect width="960" height="420" fill="url(#hbg)"/>
+  <text x="480" y="160" text-anchor="middle" fill="#c4b5a0" font-family="Georgia,serif" font-size="36" opacity="0.9">Think in public.</text>
+  <text x="480" y="210" text-anchor="middle" fill="#8b93a7" font-family="ui-monospace,monospace" font-size="12">STORYOS  replace with real home / curtain screenshot</text>
+  <rect x="380" y="260" width="200" height="44" rx="4" fill="none" stroke="#4a5568" stroke-width="1"/>
+  <text x="480" y="288" text-anchor="middle" fill="#7ee787" font-family="ui-monospace,monospace" font-size="11">Open live panel</text>
+</svg>

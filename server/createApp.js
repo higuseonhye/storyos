@@ -7,6 +7,9 @@ import { runParallelAgentStreams } from './discussStream.js'
 import { initMcpCluster } from './mcp/manager.js'
 import { createTooling } from './tools/registry.js'
 import { createLlmRuntime, resolveProvider } from './llm/runtime.js'
+import { getLlmEnvStatus } from './validateEnv.js'
+import { debug } from './logger.js'
+import { sendAgentOsWebhook } from './agentosWebhook.js'
 
 /** @type {import('./mcp/manager.js').McpCluster | null} */
 let activeMcpCluster = null
@@ -33,7 +36,7 @@ export async function createStoryOsApp() {
   const mcpCluster = skipMcp ? null : await initMcpCluster()
   activeMcpCluster = mcpCluster
   if (skipMcp && process.env.VERCEL === '1') {
-    console.info('StoryOS: MCP disabled on Vercel (use a long-running Node host for MCP_SERVERS)')
+    debug('MCP disabled on Vercel (use a long-running Node host for MCP_SERVERS)')
   }
 
   const tooling = createTooling(mcpCluster)
@@ -47,6 +50,13 @@ export async function createStoryOsApp() {
 
   const aiReady =
     (provider === 'openai' && !!openai) || (provider === 'anthropic' && !!anthropic)
+
+  const envStatus = getLlmEnvStatus()
+  const configHint = envStatus.configured
+    ? null
+    : provider === 'anthropic'
+      ? 'Set ANTHROPIC_API_KEY in .env (local) or Vercel → Environment Variables. Use LLM_PROVIDER=anthropic.'
+      : 'Set OPENAI_API_KEY in .env (local) or Vercel → Environment Variables.'
 
   const app = express()
 
@@ -64,6 +74,8 @@ export async function createStoryOsApp() {
       ok: true,
       provider,
       ai: aiReady,
+      missingEnv: envStatus.missing,
+      configHint,
       model: runtime.model,
       tools: {
         total: runtime.toolCount,
@@ -120,9 +132,25 @@ export async function createStoryOsApp() {
       res.setHeader('Cache-Control', 'no-cache, no-transform')
       res.flushHeaders?.()
 
-      await runParallelAgentStreams(runtime, req.body ?? {}, writeLine)
+      const panelResult = await runParallelAgentStreams(runtime, req.body ?? {}, writeLine)
       await tail
       if (!res.writableEnded) res.end()
+
+      const agentOsMode = (process.env.STORYOS_MODE || '').toLowerCase() === 'agentos'
+      const agentOsUrl = process.env.AGENTOS_WEBHOOK_URL?.trim()
+      if (agentOsMode && agentOsUrl) {
+        void sendAgentOsWebhook(agentOsUrl, process.env.AGENTOS_WEBHOOK_SECRET, {
+          source: 'storyos',
+          storyosMode: 'agentos',
+          provider: runtime.provider,
+          model: runtime.model,
+          topic: panelResult.topic,
+          userMessage: panelResult.userMessage,
+          panelMemory: panelResult.panelMemory,
+          agents: panelResult.agentOutputs,
+          at: new Date().toISOString(),
+        })
+      }
     } catch (err) {
       console.error('discuss/stream', err)
       try {
