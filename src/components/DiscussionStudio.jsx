@@ -58,13 +58,38 @@ export function DiscussionStudio({ onBack }) {
 
   useEffect(() => {
     let cancelled = false
-    fetch(apiUrl('/api/health'))
-      .then((r) => r.json())
+    const url = apiUrl('/api/health')
+    fetch(url)
+      .then(async (r) => {
+        const text = await r.text()
+        let j = {}
+        try {
+          j = text ? JSON.parse(text) : {}
+        } catch {
+          j = { parseError: true, raw: text.slice(0, 120) }
+        }
+        if (!r.ok) {
+          j = {
+            ...j,
+            ok: false,
+            ai: false,
+            httpStatus: r.status,
+            httpStatusText: r.statusText,
+          }
+        }
+        return j
+      })
       .then((j) => {
         if (!cancelled) setHealth(j)
       })
-      .catch(() => {
-        if (!cancelled) setHealth({ ok: false, ai: false, provider: 'openai' })
+      .catch((err) => {
+        if (!cancelled)
+          setHealth({
+            ok: false,
+            ai: false,
+            provider: 'openai',
+            networkError: err instanceof Error ? err.message : String(err),
+          })
       })
     return () => {
       cancelled = true
@@ -192,6 +217,32 @@ export function DiscussionStudio({ onBack }) {
               <code>OPENAI_API_KEY</code>
             )}{' '}
             in <code>.env</code>.
+            {typeof health.httpStatus === 'number' ? (
+              <>
+                <br />
+                <span className="discussion-studio__warn-detail">
+                  HTTP {health.httpStatus} on <code>{apiUrl('/api/health')}</code>
+                  {health.httpStatus === 404
+                    ? ' — API route not deployed (redeploy from latest Git; check Vercel build logs for Functions).'
+                    : ''}
+                </span>
+              </>
+            ) : null}
+            {health.networkError ? (
+              <>
+                <br />
+                <span className="discussion-studio__warn-detail">Network: {health.networkError}</span>
+              </>
+            ) : null}
+            {health.ai === false && health.ok !== false && !health.httpStatus ? (
+              <>
+                <br />
+                <span className="discussion-studio__warn-detail">
+                  API replied but <code>ai: false</code> — check Vercel env: <code>OPENAI_API_KEY</code>, and{' '}
+                  <code>LLM_PROVIDER=openai</code> if using OpenAI. Redeploy after changing variables.
+                </span>
+              </>
+            ) : null}
           </p>
         ) : null}
         {health && aiReady ? (

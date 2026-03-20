@@ -92,6 +92,15 @@
   color: var(--text);
 }
 
+.discussion-studio__warn-detail {
+  display: block;
+  margin-top: 0.65rem;
+  font-size: 0.78rem;
+  font-weight: 400;
+  color: rgba(232, 196, 168, 0.92);
+  line-height: 1.45;
+}
+
 .discussion-studio__meta {
   margin-top: 0.85rem;
   font-size: 0.75rem;
