@@ -11,4 +11,4 @@ npm run dev
 
 No backend, no API, no real AI.
 
-**Architecture & pacing details:** [`PROJECT_CONTEXT.md`](./PROJECT_CONTEXT.md)
+**Architecture & pacing details:** [`PROJECT_CONTEXT.md`](./PROJECT_CONTEXT.md) (includes **§10 — current stage & next actions** for planning)

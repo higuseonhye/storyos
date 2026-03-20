@@ -142,4 +142,35 @@ Full notes: PROJECT_CONTEXT.md in the repo root.
 | Where to document context? | **README** = how to run; **PROJECT_CONTEXT.md** = context / handoff |
 | What to paste into ChatGPT? | **Section 8** above; replace `[your request here]` |
 
-You can add sections here anytime (e.g. known bugs, next ideas).
+---
+
+## 10. Current stage of development (for planning / discussion)
+
+**Where StoryOS is today**
+
+- **Type:** Cinematic **front-end prototype / demo** — built to *feel* like watching a process think, not to ship production AI.  
+- **Scope:** No backend, no API, no live model calls. All beats come from **`STORY_SEQUENCE`** in `tellStory.js`.  
+- **UX:** **Landing** → fade → **story view** with **`tellStory`** (anticipation, conflict disruption, final reflection pause). Replay via **Start** on the story screen.  
+- **Deploy:** Production build is on **[Vercel](https://storyos.vercel.app/)** (see §7).  
+- **Stability:** Core story runner is intentionally small and sequential; docs and timing constants are aligned in this file.
+
+**What it is *not* yet**
+
+- Not a configurable “mission builder,” not user-authored steps in the UI.  
+- No auth, accounts, or saved runs.  
+- No integration with real agents or streaming output.  
+- No automated tests or formal a11y/perf pass (optional next steps).
+
+**Possible next actions** *(pick what matches your goals — discuss and prioritize)*
+
+| Area | Ideas |
+|------|--------|
+| **Product** | Turn demo into a product narrative: what problem does StoryOS solve for whom? Real AI later vs stay demo-only? |
+| **Content** | Richer copy per beat; multiple sequences; load sequence from JSON/markdown; light CMS. |
+| **UX** | “Back to landing”; optional sound; subtle progress cue; keyboard (e.g. Enter to start); reduced motion preference. |
+| **Engineering** | Vitest/Playwright smoke test; `vercel.json` / build checks in CI; env-based feature flags. |
+| **Design** | Mobile/long-landing polish; typography scale audit; locale-ready strings. |
+
+Use this section as the **starting point for the next conversation**: e.g. “We want to prioritize X from §10” or “We’re staying demo-only; refine Y.”
+
+Update §10 when the stage changes.
