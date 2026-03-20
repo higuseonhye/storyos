@@ -1,12 +1,12 @@
 import './StoryEvent.css'
 
-export function StoryEvent({ agent, message, type = 'default', isVisible }) {
+export function StoryEvent({ title, tone, show }) {
   return (
-    <div className={`story-event ${type} ${isVisible ? 'visible' : ''}`}>
-      {agent && (
-        <span className="story-event__agent">{agent}</span>
-      )}
-      <p className="story-event__message">{message}</p>
-    </div>
+    <article
+      className={`story-event story-event--${tone} ${show ? 'story-event--show' : ''}`}
+      aria-hidden={!show}
+    >
+      <p className="story-event__title">{title}</p>
+    </article>
   )
 }

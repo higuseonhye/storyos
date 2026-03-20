@@ -1,41 +1,24 @@
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import { StoryInput } from './components/StoryInput'
 import { StoryTimeline } from './components/StoryTimeline'
 import './App.css'
 
-function App() {
-  const [isRunning, setIsRunning] = useState(false)
-  const [hasCompleted, setHasCompleted] = useState(false)
-
-  const handleStart = () => {
-    setIsRunning(true)
-    setHasCompleted(false)
-  }
-
-  const handleComplete = () => {
-    setIsRunning(false)
-    setHasCompleted(true)
-  }
+export default function App() {
+  const [playing, setPlaying] = useState(false)
+  const handleRest = useCallback(() => setPlaying(false), [])
 
   return (
     <div className="app">
-      <header className="app__header">
-        <h1 className="app__title">StoryOS</h1>
-        <p className="app__tagline">Mission Control</p>
+      <header className="app__brand">
+        <span className="app__name">StoryOS</span>
       </header>
 
-      <main className="app__main">
-        <StoryInput onStart={handleStart} isRunning={isRunning} />
-        <StoryTimeline isRunning={isRunning} onComplete={handleComplete} />
-      </main>
+      <StoryInput
+        onStart={() => setPlaying(true)}
+        disabled={playing}
+      />
 
-      {hasCompleted && (
-        <div className="app__complete">
-          <span className="app__complete-text">Mission complete</span>
-        </div>
-      )}
+      <StoryTimeline playing={playing} onRest={handleRest} />
     </div>
   )
 }
-
-export default App

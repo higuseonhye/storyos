@@ -2,65 +2,66 @@ import { useEffect, useRef, useState } from 'react'
 import { StoryEvent } from './StoryEvent'
 import './StoryTimeline.css'
 
-const MISSION_EVENTS = [
-  { agent: null, message: 'Mission Initialized', type: 'default' },
-  { agent: 'Research Agent', message: 'Scanning market signals...', type: 'default' },
-  { agent: 'Analysis Agent', message: 'Patterns emerging...', type: 'default' },
-  { agent: 'Conflict Event', message: 'Conflicting data detected', type: 'conflict' },
-  { agent: 'Strategy Agent', message: 'Generating possible paths', type: 'default' },
-  { agent: 'Critic Agent', message: 'Evaluating risks', type: 'default' },
-  { agent: 'Final Decision', message: 'Recommendation ready', type: 'decision' },
+const STEP_MS = 1600
+
+const STEPS = [
+  { id: 'init', title: 'Mission Initialized', tone: 'open' },
+  { id: 'research', title: 'Research Agent', tone: 'default' },
+  { id: 'analysis', title: 'Analysis Agent', tone: 'default' },
+  { id: 'conflict', title: 'Conflict', tone: 'conflict' },
+  { id: 'strategy', title: 'Strategy Agent', tone: 'default' },
+  { id: 'critic', title: 'Critic Agent', tone: 'default' },
+  { id: 'final', title: 'Final Decision', tone: 'final' },
 ]
 
-export function StoryTimeline({ isRunning, onComplete }) {
-  const containerRef = useRef(null)
-  const [visibleCount, setVisibleCount] = useState(0)
+export function StoryTimeline({ playing, onRest }) {
+  const scrollRef = useRef(null)
+  const [visible, setVisible] = useState(0)
 
   useEffect(() => {
-    if (!isRunning) return
+    if (!playing) return
 
-    setVisibleCount(0)
-    const delays = MISSION_EVENTS.map((_, i) => 1200 + Math.random() * 800)
+    setVisible(0)
+    const timers = []
 
-    const timers = MISSION_EVENTS.map((_, i) => {
-      const totalDelay = delays.slice(0, i + 1).reduce((a, b) => a + b, 0)
-      return setTimeout(() => {
-        setVisibleCount((c) => c + 1)
-      }, totalDelay)
-    })
+    for (let i = 0; i < STEPS.length; i++) {
+      timers.push(
+        setTimeout(() => setVisible(i + 1), STEP_MS * (i + 1)),
+      )
+    }
 
-    const completeDelay = delays.reduce((a, b) => a + b, 0) + 1500
-    const completeTimer = setTimeout(onComplete, completeDelay)
+    const done = setTimeout(() => {
+      onRest()
+    }, STEP_MS * (STEPS.length + 1))
 
     return () => {
       timers.forEach(clearTimeout)
-      clearTimeout(completeTimer)
+      clearTimeout(done)
     }
-  }, [isRunning, onComplete])
+  }, [playing, onRest])
 
   useEffect(() => {
-    if (!containerRef.current || visibleCount === 0) return
-    const last = containerRef.current.lastElementChild
-    last?.scrollIntoView({ behavior: 'smooth', block: 'end' })
-  }, [visibleCount])
+    if (visible === 0 || !scrollRef.current) return
+    const nodes = scrollRef.current.querySelectorAll('.story-event')
+    const last = nodes[visible - 1]
+    last?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+  }, [visible])
 
   return (
-    <div className="story-timeline" ref={containerRef}>
-      {!isRunning && visibleCount === 0 && (
-        <p className="story-timeline__placeholder">
-          Awaiting mission start...
-        </p>
-      )}
-      {MISSION_EVENTS.map((event, i) => (
-        <StoryEvent
-          key={i}
-          agent={event.agent}
-          message={event.message}
-          type={event.type}
-          isVisible={i < visibleCount}
-        />
-      ))}
-    </div>
+    <section className="story-timeline" aria-label="Story">
+      <div className="story-timeline__inner" ref={scrollRef}>
+        {playing || visible > 0 ? null : (
+          <p className="story-timeline__hush">Quiet until you begin.</p>
+        )}
+        {STEPS.map((step, i) => (
+          <StoryEvent
+            key={step.id}
+            title={step.title}
+            tone={step.tone}
+            show={i < visible}
+          />
+        ))}
+      </div>
+    </section>
   )
 }
-

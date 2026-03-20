@@ -1,6 +1,6 @@
 # StoryOS
 
-A cinematic prototype — watch an AI mission unfold like a story.
+A minimal cinematic prototype: a calm, story-like timeline—no backend, no API.
 
 ## Run
 
@@ -9,10 +9,4 @@ npm install
 npm run dev
 ```
 
-Open http://localhost:5173
-
-## What it is
-
-A **visual and experiential prototype**. No backend, no real AI. Focus on flow, timing, and storytelling.
-
-Click **Start Mission** to watch the sequence unfold.
+Open http://localhost:5173 — tap **Begin** to watch the sequence.
