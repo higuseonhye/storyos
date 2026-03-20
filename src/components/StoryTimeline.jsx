@@ -48,7 +48,7 @@ export function StoryTimeline({ running, onRunEnd }) {
     <section className="story-timeline" aria-live="polite" aria-label="Story">
       <div className="story-timeline__list" ref={listRef}>
         {revealed.length === 0 && !running && (
-          <p className="story-timeline__hint">Begin when you are ready.</p>
+          <p className="story-timeline__hint">Quiet for now. Watch again when you’re ready.</p>
         )}
         {revealed.map((step) => (
           <div key={step.key} className="story-timeline__row">

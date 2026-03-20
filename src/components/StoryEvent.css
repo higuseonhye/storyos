@@ -75,14 +75,28 @@
   box-shadow:
     0 0 60px rgba(168, 184, 160, 0.06),
     inset 0 0 48px rgba(168, 184, 160, 0.04);
-  transform: translateY(26px);
+  transform: translateY(28px);
   transition:
-    opacity 1s cubic-bezier(0.12, 0.9, 0.28, 1),
-    transform 1.15s cubic-bezier(0.12, 0.9, 0.28, 1);
+    opacity 1.12s cubic-bezier(0.12, 0.9, 0.28, 1),
+    transform 1.28s cubic-bezier(0.12, 0.9, 0.28, 1);
 }
 
 .story-event--final.story-event--show {
   transform: translateY(0);
+  animation: finalHoldGlow 8s ease-in-out 1.4s infinite alternate;
+}
+
+@keyframes finalHoldGlow {
+  from {
+    box-shadow:
+      0 0 56px rgba(168, 184, 160, 0.055),
+      inset 0 0 44px rgba(168, 184, 160, 0.038);
+  }
+  to {
+    box-shadow:
+      0 0 76px rgba(168, 184, 160, 0.075),
+      inset 0 0 54px rgba(168, 184, 160, 0.05);
+  }
 }
 
 .story-event--final .story-event__text {
@@ -94,4 +108,14 @@
     0 0 32px rgba(168, 184, 160, 0.22),
     0 0 56px rgba(168, 184, 160, 0.1),
     0 0 80px rgba(168, 184, 160, 0.05);
+  animation: finalTextStill 9s ease-in-out 2s infinite alternate;
+}
+
+@keyframes finalTextStill {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0.9;
+  }
 }

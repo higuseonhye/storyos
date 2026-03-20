@@ -8,7 +8,7 @@
   padding: 3.5rem 1.5rem 4rem;
   background: var(--bg);
   opacity: 1;
-  transition: opacity 0.55s ease;
+  transition: opacity 0.72s cubic-bezier(0.22, 1, 0.36, 1);
   overflow-y: auto;
 }
 
@@ -37,7 +37,18 @@
   letter-spacing: 0.42em;
   text-transform: uppercase;
   color: var(--text-faint);
-  margin-bottom: 2.25rem;
+  margin-bottom: 1.75rem;
+}
+
+.landing__kicker {
+  font-family: var(--font-ui);
+  font-size: 0.8125rem;
+  font-weight: 300;
+  line-height: 1.5;
+  letter-spacing: 0.04em;
+  color: var(--text-soft);
+  max-width: 22rem;
+  margin: 0 auto 1.5rem;
 }
 
 .landing__headline {
@@ -47,18 +58,18 @@
   letter-spacing: 0.02em;
   line-height: 1.2;
   color: var(--text);
-  margin-bottom: 1.75rem;
+  margin-bottom: 1.5rem;
 }
 
 .landing__subtext {
   font-family: var(--font-ui);
   font-size: 0.9375rem;
   font-weight: 300;
-  line-height: 1.58;
-  letter-spacing: 0.02em;
+  line-height: 1.62;
+  letter-spacing: 0.022em;
   color: var(--text-soft);
   max-width: 34rem;
-  margin: 0 auto 2.75rem;
+  margin: 0 auto 2.85rem;
 }
 
 .landing__cta {

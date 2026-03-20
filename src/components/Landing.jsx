@@ -6,12 +6,15 @@ export function Landing({ exiting, onEnterStory }) {
       <div className="landing__inner">
         <section className="landing__hero" aria-labelledby="landing-headline">
           <p className="landing__wordmark">StoryOS</p>
+          <p className="landing__kicker">
+            Not another answer — a window into how it gets there.
+          </p>
           <h1 id="landing-headline" className="landing__headline">
             Watch AI think.
           </h1>
           <p className="landing__subtext">
-            StoryOS turns AI work into a story you can follow — step by step,
-            decision by decision.
+            This demo is a single story: you stay still and watch a mission unfold —
+            thought by thought, beat by beat. No prompts. Just attention.
           </p>
           <button
             type="button"
@@ -19,28 +22,28 @@ export function Landing({ exiting, onEnterStory }) {
             onClick={onEnterStory}
             disabled={exiting}
           >
-            Start a mission
+            Begin watching
           </button>
         </section>
 
         <section className="landing__block" aria-label="The problem">
           <p className="landing__body">
-            AI gives answers.
+            Most AI shows you the finish line.
             <br />
-            But you don’t know how it got there.
+            You rarely see the path it ran.
           </p>
         </section>
 
         <section className="landing__block" aria-label="The solution">
           <p className="landing__body landing__body--lead">
-            StoryOS reveals the thinking.
+            Here, the path is the point.
           </p>
           <p className="landing__body">
-            Research unfolds.
+            Research surfaces.
             <br />
-            Conflicts emerge.
+            Tension shows.
             <br />
-            Decisions become visible.
+            A decision lands.
           </p>
         </section>
 
@@ -51,12 +54,12 @@ export function Landing({ exiting, onEnterStory }) {
             onClick={onEnterStory}
             disabled={exiting}
           >
-            Try the demo
+            Enter the demo
           </button>
         </section>
 
         <footer className="landing__footer">
-          <p>StoryOS — AI, as a story</p>
+          <p>StoryOS — intelligence, told as a story</p>
         </footer>
       </div>
     </div>

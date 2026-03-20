@@ -52,13 +52,13 @@ src/
     - `delay` — ms to wait **after** this step appears (before micro-gap / next step)  
   - **`wait(ms)`** — exported; single `Promise` + `setTimeout` for all delays  
   - **Exports:** pacing constants in §5 (start, micro-gaps, conflict/final anticipation, **reflection** after final)  
-  - **`tellStory(onStep, isCancelled)`** — one `for` loop: **anticipation** before **Conflict** and **Final** (two-stage pause before final), then `onStep` → `await wait(step.delay)` → **micro pause** between steps (not after the last); after the loop, **`REFLECTION_AFTER_FINAL_MS`** so the ending holds before `onRunEnd()` — **no parallel playback**  
+  - **`tellStory(onStep, isCancelled)`** — one `for` loop: **anticipation** before **Conflict** and **Final** (two-stage pause before final), then `onStep` → `await wait(step.delay)` → **varied micro pauses** (`MICRO_BETWEEN_STEPS_MS`, not a single metronome); after the loop, **`REFLECTION_AFTER_FINAL_MS`** — **no parallel playback**  
   - **`isCancelled()`** — handles unmount, React Strict Mode, and restarts  
 
 **UI flow**
 
 1. Default **`view === 'landing'`** — minimal intro; **Start a mission** or **Try the demo** triggers a short **landing fade-out**, then **`view === 'story'`** and **`running === true`** (timeline starts automatically).  
-2. On the story screen, **Start** sets `running === true` again after a run ends (replay).  
+2. On the story screen, **Watch again** sets `running === true` after a run ends (replay). While playing, the button shows **Watching…**.  
 3. `StoryTimeline`’s `useEffect` runs an **async IIFE**: **`await wait(STORY_START_DELAY_MS)`** before `tellStory`, then `tellStory`  
 4. Each step: `onStep` → `setRevealed` appends one line  
 5. After the story (including **reflection** stillness): `onRunEnd()` → `running === false`, button enabled again  
@@ -79,24 +79,24 @@ src/
 
 | Constant | ms | Role |
 |----------|-----|------|
-| `STORY_START_DELAY_MS` | 850 | After **Start**, before first beat (`StoryTimeline`) |
-| `MICRO_BETWEEN_MS` | 400 | After each step’s `delay`, before the next (not after last) |
-| `ANTICIPATION_BEFORE_CONFLICT_MS` | 920 | Stillness before **Conflict** |
-| `PAUSE_BEFORE_FINAL_MS` | 900 | First quiet beat before **Final** |
-| `ANTICIPATION_BEFORE_FINAL_MS` | 720 | Second beat before **Final** |
-| `REFLECTION_AFTER_FINAL_MS` | 3200 | After **Final** is visible; `running` stays true — no immediate reset |
+| `STORY_START_DELAY_MS` | 1180 | After story view is live, before first beat (`StoryTimeline`) |
+| `MICRO_BETWEEN_MS` | 400 | Legacy export; gaps use **`MICRO_BETWEEN_STEPS_MS`** array in `tellStory.js` |
+| `ANTICIPATION_BEFORE_CONFLICT_MS` | 940 | Stillness before **Conflict** |
+| `PAUSE_BEFORE_FINAL_MS` | 920 | First quiet beat before **Final** |
+| `ANTICIPATION_BEFORE_FINAL_MS` | 780 | Second beat before **Final** |
+| `REFLECTION_AFTER_FINAL_MS` | 5200 | After **Final** is visible; `running` stays true — extended stillness |
 
-**`STORY_SEQUENCE` `delay` values (after line appears):** open/default beats 850–950ms; **Conflict** 2000ms; **Critic** 1800ms; **Final** 0ms.
+**`STORY_SEQUENCE` `delay` values (after line appears):** tuned per beat (e.g. open ~820ms, conflict ~2100ms, critic ~1720ms); **Final** 0ms.
 
 ---
 
 ## 6. Design direction
 
-- **Landing:** typography-led, ~42rem column, no cards; fade-out before story; same dark theme + fonts  
+- **Landing:** kicker + headline clarify *watching* (not chatting); longer ease-out fade (~0.72s); CTA **Begin watching** / **Enter the demo**  
 - Dark background, generous spacing, minimal copy  
 - Beats: **fade in + slight move up** (~550ms, ease-out curve) in `StoryEvent.css`  
 - **Conflict:** break in the flow — extra top margin, higher-contrast border/gradient panel, subtle lift + **~1.03 scale** on reveal; longer **anticipation** pause than between normal beats (`ANTICIPATION_BEFORE_CONFLICT_MS`)  
-- **Final:** **~1s / ~1.15s** entrance (slower than other beats), generous padding/margins, radial **highlight** + soft outer glow, layered **text-shadow**; reads as an **ending**, not the last list row  
+- **Final:** slower entrance (~1.1s / ~1.3s), radial highlight; **very slow alternate** glow + text opacity during the hold (reflection); long **`REFLECTION_AFTER_FINAL_MS`** before UI unlocks  
 - Layout: mostly centered  
 
 ---
@@ -124,10 +124,10 @@ App: App.jsx uses view "landing" | "story"; Landing.jsx + Landing.css = quiet in
 Core code: src/story/tellStory.js
 - STORY_SEQUENCE: array of { text, type, delay }
 - wait(ms): single Promise + setTimeout
-- Exported pacing: STORY_START_DELAY_MS, MICRO_BETWEEN_MS, ANTICIPATION_BEFORE_CONFLICT_MS, PAUSE_BEFORE_FINAL_MS, ANTICIPATION_BEFORE_FINAL_MS, REFLECTION_AFTER_FINAL_MS (+ STORY_SEQUENCE delays)
-- tellStory(onStep, isCancelled): one async for-loop only — no parallel timers; micro-pauses; anticipation before Conflict and two-stage before Final; after the last step, REFLECTION_AFTER_FINAL_MS before returning (then onRunEnd)
+- Exported pacing: STORY_START_DELAY_MS, MICRO_BETWEEN_MS (legacy), ANTICIPATION_*, REFLECTION_AFTER_FINAL_MS (+ STORY_SEQUENCE); between beats use MICRO_BETWEEN_STEPS_MS array inside tellStory
+- tellStory(onStep, isCancelled): one async for-loop — varied micro-gaps, anticipation before Conflict, two-stage before Final, long REFLECTION_AFTER_FINAL_MS (then onRunEnd)
 
-UI: App.jsx — landing first, then story shell; CTA fades into story and auto-starts timeline; Start replays. StoryTimeline awaits STORY_START_DELAY_MS then tellStory. StoryEvent: fade/slide; Conflict = disruption; Final = slower settle + glow + reflection hold. Types: open | default | conflict | final.
+UI: landing → ~0.72s fade, ~740ms handoff; story eases in; Watching… / Watch again; StoryTimeline STORY_START_DELAY_MS then tellStory; Final has ambient hold CSS. Types: open | default | conflict | final.
 
 Keep this architecture. Help me with: [your request here].
 Full notes: PROJECT_CONTEXT.md in the repo root.

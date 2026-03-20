@@ -19,7 +19,7 @@ export default function App() {
       setRunning(true)
       setLandingExiting(false)
       enteringRef.current = false
-    }, 520)
+    }, 740)
   }, [])
 
   return (
@@ -38,7 +38,7 @@ export default function App() {
               onClick={() => setRunning(true)}
               disabled={running}
             >
-              {running ? 'Unfolding…' : 'Start'}
+              {running ? 'Watching…' : 'Watch again'}
             </button>
           </header>
 
