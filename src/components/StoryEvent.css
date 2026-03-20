@@ -14,6 +14,17 @@
   transform: translateY(0);
 }
 
+.story-event__role {
+  display: block;
+  font-family: var(--font-ui);
+  font-size: 0.5625rem;
+  font-weight: 500;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  margin-bottom: 0.65rem;
+}
+
 .story-event__text {
   font-family: var(--font-story);
   font-size: clamp(1.35rem, 4vw, 1.55rem);
@@ -24,9 +35,42 @@
   color: var(--text);
 }
 
+.story-event--open .story-event__role {
+  color: var(--text-soft);
+}
+
 .story-event--open .story-event__text {
   font-weight: 500;
   color: var(--text-soft);
+}
+
+.story-event--open.story-event--show .story-event__text {
+  animation: openBreath 5s ease-in-out 0.4s infinite alternate;
+}
+
+@keyframes openBreath {
+  from {
+    letter-spacing: 0.035em;
+  }
+  to {
+    letter-spacing: 0.045em;
+  }
+}
+
+/* Default beats: slight “signal” pulse when they land */
+.story-event--default.story-event--show .story-event__text {
+  animation: signalSettle 0.85s ease-out forwards;
+}
+
+@keyframes signalSettle {
+  from {
+    opacity: 0.85;
+    filter: brightness(0.92);
+  }
+  to {
+    opacity: 1;
+    filter: brightness(1);
+  }
 }
 
 /* Disruption: stronger contrast, slight scale pop, extra air above */
@@ -53,10 +97,71 @@
   transform: translateY(0) scale(1.035);
 }
 
+.story-event--conflict .story-event__role {
+  color: rgba(232, 200, 172, 0.55);
+}
+
 .story-event--conflict .story-event__text {
   color: #e4d0c0;
   font-weight: 500;
   text-shadow: 0 0 24px rgba(201, 168, 138, 0.18);
+}
+
+/* Critic: breaks the center column — voice of doubt, not a chat reply */
+.story-event--critic {
+  margin-top: 2.5rem;
+  margin-left: 0;
+  margin-right: auto;
+  max-width: 100%;
+  padding: 2.15rem 1.35rem 2.35rem 1.5rem;
+  text-align: left;
+  border-bottom: none;
+  border-left: 3px solid var(--critic-edge);
+  border-radius: 0 4px 4px 0;
+  background: linear-gradient(
+    90deg,
+    var(--critic-glow) 0%,
+    rgba(12, 12, 13, 0.65) 55%,
+    transparent 100%
+  );
+  transform: translateX(-12px) translateY(12px);
+  opacity: 0;
+  transition:
+    opacity 0.62s cubic-bezier(0.22, 0.82, 0.28, 1),
+    transform 0.72s cubic-bezier(0.22, 0.82, 0.28, 1);
+}
+
+.story-event--critic.story-event--show {
+  opacity: 1;
+  transform: translateX(0) translateY(0);
+  animation: criticEdgePulse 3.2s ease-in-out 0.9s infinite alternate;
+}
+
+@keyframes criticEdgePulse {
+  from {
+    border-left-color: rgba(196, 120, 108, 0.75);
+    box-shadow: inset 6px 0 24px rgba(196, 120, 108, 0.04);
+  }
+  to {
+    border-left-color: rgba(220, 140, 125, 0.95);
+    box-shadow: inset 6px 0 32px rgba(196, 120, 108, 0.09);
+  }
+}
+
+.story-event--critic .story-event__role {
+  color: rgba(220, 150, 138, 0.75);
+  letter-spacing: 0.32em;
+  margin-bottom: 0.75rem;
+}
+
+.story-event--critic .story-event__text {
+  font-size: clamp(1.28rem, 3.9vw, 1.48rem);
+  font-style: italic;
+  font-weight: 500;
+  line-height: 1.52;
+  letter-spacing: 0.028em;
+  color: #e8d6d2;
+  text-shadow: 0 0 20px rgba(196, 120, 108, 0.12);
 }
 
 /* Ending: slower settle, more air, soft luminance — not “the last list item” */
@@ -81,6 +186,10 @@
     transform 1.28s cubic-bezier(0.12, 0.9, 0.28, 1);
 }
 
+.story-event--final .story-event__role {
+  color: rgba(168, 184, 160, 0.45);
+}
+
 .story-event--final.story-event--show {
   transform: translateY(0);
   animation: finalHoldGlow 8s ease-in-out 1.4s infinite alternate;
@@ -101,6 +210,7 @@
 
 .story-event--final .story-event__text {
   font-size: clamp(1.65rem, 5.2vw, 2.12rem);
+  font-style: normal;
   letter-spacing: 0.045em;
   line-height: 1.46;
   color: #c5d4be;

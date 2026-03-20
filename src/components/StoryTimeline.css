@@ -1,15 +1,37 @@
 .story-timeline {
   width: 100%;
-  max-width: 22rem;
+  max-width: 24rem;
 }
 
+/* Thread spine: process unfolding, not a chat transcript */
 .story-timeline__list {
   list-style: none;
   margin: 0;
-  padding: 0;
+  padding: 0 0 0 1.1rem;
   max-height: min(52vh, 22rem);
   overflow-y: auto;
   scroll-behavior: smooth;
+  position: relative;
+}
+
+.story-timeline__list::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  border-radius: 1px;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(196, 181, 160, 0.2) 12%,
+    rgba(196, 181, 160, 0.09) 48%,
+    rgba(196, 120, 108, 0.18) 78%,
+    transparent 100%
+  );
+  pointer-events: none;
+  opacity: 0.85;
 }
 
 .story-timeline__list::-webkit-scrollbar {
@@ -23,6 +45,7 @@
 
 .story-timeline__row {
   margin: 0;
+  position: relative;
 }
 
 .story-timeline__hint {

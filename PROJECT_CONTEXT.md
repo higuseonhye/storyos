@@ -48,11 +48,11 @@ src/
 - `src/story/tellStory.js`
   - **`STORY_SEQUENCE`**: `{ text, type, delay }[]`
     - `text` — line shown on screen  
-    - `type` — `'open' | 'default' | 'conflict' | 'final'` → CSS variant on `StoryEvent`  
+    - `type` — `'open' | 'default' | 'conflict' | 'critic' | 'final'` → CSS variant + optional **role label** on `StoryEvent` (thread metaphor, not chat bubbles)  
     - `delay` — ms to wait **after** this step appears (before micro-gap / next step)  
   - **`wait(ms)`** — exported; single `Promise` + `setTimeout` for all delays  
-  - **Exports:** pacing constants in §5 (start, micro-gaps, conflict/final anticipation, **reflection**, **UI settle** after reflection)  
-  - **`tellStory(onStep, isCancelled)`** — one `for` loop: short lead-in + **anticipation** before **Conflict**; two-stage pause before **Final**; `onStep` → `delay` → **varied micro pauses** (`MICRO_BETWEEN_STEPS_MS`); then **`REFLECTION_AFTER_FINAL_MS`** + **`UI_SETTLE_AFTER_REFLECTION_MS`** before return — **no parallel playback**  
+  - **Exports:** pacing constants in §5 (start, micro-gaps, conflict/**critic**/final anticipation, **reflection**, **UI settle** after reflection)  
+  - **`tellStory(onStep, isCancelled)`** — one `for` loop: lead-in + anticipation before **Conflict**; anticipation before **Critic**; two-stage pause before **Final**; `onStep` → `delay` → **varied micro pauses** (`MICRO_BETWEEN_STEPS_MS`); then **`REFLECTION_AFTER_FINAL_MS`** + **`UI_SETTLE_AFTER_REFLECTION_MS`** — **no parallel playback**  
   - **`isCancelled()`** — handles unmount, React Strict Mode, and restarts  
 
 **UI flow**
@@ -74,7 +74,7 @@ Fixed **high-stakes commit demo** (runway + one bet) — all strings in `STORY_S
 3. Analysis — wedge vs owned roadmaps (`default`)  
 4. Tension — narrative breadth vs retention truth (`conflict`)  
 5. Strategy — narrow proof before scale (`default`)  
-6. Critic — cost of broad launch (`default`)  
+6. Critic — cost of broad launch (`critic` — own layout + pause before reveal)  
 7. Final — vertical, 30% / D30 bar, expand or pivot (`final`)  
 
 **Timing constants** (see `tellStory.js`; import names match exports):
@@ -84,6 +84,7 @@ Fixed **high-stakes commit demo** (runway + one bet) — all strings in `STORY_S
 | `STORY_START_DELAY_MS` | 1080 | After story view is live, before first beat (`StoryTimeline`) |
 | `MICRO_BETWEEN_MS` | 400 | Legacy export; gaps use **`MICRO_BETWEEN_STEPS_MS`** in `tellStory.js` |
 | `ANTICIPATION_BEFORE_CONFLICT_MS` | 1040 | Stillness before **Conflict** (after internal 240ms lead-in) |
+| `ANTICIPATION_BEFORE_CRITIC_MS` | 760 | Stillness before **Critic** |
 | `PAUSE_BEFORE_FINAL_MS` | 940 | First quiet beat before **Final** |
 | `ANTICIPATION_BEFORE_FINAL_MS` | 800 | Second beat before **Final** |
 | `REFLECTION_AFTER_FINAL_MS` | 5200 | After **Final** is visible (≥ ~2–3s of stillness) |
@@ -99,9 +100,11 @@ Fixed **high-stakes commit demo** (runway + one bet) — all strings in `STORY_S
 
 - **Landing:** inner **fade / lift on load**; CTAs disabled ~1.9s; **Start a mission** / **Try the demo**; post-click **~800ms** hold then **~0.76s** fade  
 - Dark background, generous spacing, minimal copy  
-- Beats: **fade in + slight move up** (~550ms, ease-out curve) in `StoryEvent.css`  
-- **Conflict:** break in the flow — extra top margin, higher-contrast border/gradient panel, subtle lift + **~1.03 scale** on reveal; longer **anticipation** pause than between normal beats (`ANTICIPATION_BEFORE_CONFLICT_MS`)  
-- **Final:** slower entrance, radial highlight; slow ambient glow + text during hold; **`REFLECTION_AFTER_FINAL_MS`** then **`UI_SETTLE_AFTER_REFLECTION_MS`** before button returns smoothly (`app__start` opacity transition)  
+- **Timeline:** vertical **thread spine** (gradient line) — reads as one process, not a chat log (`StoryTimeline.css`)  
+- Beats: role labels **Brief / Tension / Critic / Decision** where set; **default** lines stay unlabeled signal steps  
+- **Conflict:** centered disruption panel + scale  
+- **Critic:** **left-aligned** objection block, sienna edge, italic voice, edge pulse; **anticipation** before it appears  
+- **Final:** slower entrance, ambient glow; long reflection + UI settle  
 - Layout: mostly centered  
 
 ---
@@ -126,9 +129,9 @@ Stack: React 18, Vite 5, plain CSS.
 
 App: view landing | story; Landing = intro + ~1.9s CTA delay + load fade; click → ~800ms anticipation → ~0.76s landing fade → story + auto-run.
 
-Core: tellStory.js — STORY_SEQUENCE; wait(); exports include REFLECTION_AFTER_FINAL_MS, UI_SETTLE_AFTER_REFLECTION_MS; MICRO_BETWEEN_STEPS_MS; conflict lead-in + anticipation; two-stage before final; reflection + UI settle before onRunEnd.
+Core: tellStory.js — STORY_SEQUENCE types include **critic**; anticipation before conflict + critic; reflection + UI settle.
 
-UI: story shell eases in; Watching… / Watch again (soft opacity transition); StoryTimeline; Final ambient CSS. Types: open | default | conflict | final.
+UI: thread spine timeline; StoryEvent roles + critic asymmetry (not chat bubbles); Watching… / Watch again. Types: open | default | conflict | critic | final.
 
 Keep this architecture. Help me with: [your request here].
 Full notes: PROJECT_CONTEXT.md in the repo root.

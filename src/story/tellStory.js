@@ -27,6 +27,9 @@ export const ANTICIPATION_BEFORE_FINAL_MS = 800
 /** ms hush before Conflict — longer than micro-gaps; reads as disruption, not “loading” */
 export const ANTICIPATION_BEFORE_CONFLICT_MS = 1040
 
+/** ms before Critic appears — objection enters after a held breath */
+export const ANTICIPATION_BEFORE_CRITIC_MS = 760
+
 /**
  * ms after story view is live, before the first beat — “thinking is starting”.
  */
@@ -74,8 +77,8 @@ export const STORY_SEQUENCE = [
     delay: 895,
   },
   {
-    text: 'Critic — A loud general launch burns half our runway before we know if anyone stays.',
-    type: 'default',
+    text: 'A loud general launch burns half our runway before we know if anyone stays.',
+    type: 'critic',
     delay: 1680,
   },
   {
@@ -100,6 +103,11 @@ export async function tellStory(onStep, isCancelled) {
       await wait(CONFLICT_LEAD_IN_MS)
       if (isCancelled()) return
       await wait(ANTICIPATION_BEFORE_CONFLICT_MS)
+      if (isCancelled()) return
+    }
+
+    if (step.type === 'critic') {
+      await wait(ANTICIPATION_BEFORE_CRITIC_MS)
       if (isCancelled()) return
     }
 

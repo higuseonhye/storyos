@@ -27,7 +27,7 @@ export function Landing({ exiting, anticipating, onEnterStory }) {
         <section className="landing__hero" aria-labelledby="landing-headline">
           <p className="landing__wordmark">StoryOS</p>
           <p className="landing__kicker">
-            A front-end demo — no chat box, just a slow reveal of steps.
+            Not a chat thread — one judgment, unfolding as a live reasoning line.
           </p>
           <h1 id="landing-headline" className="landing__headline">
             Watch AI think.

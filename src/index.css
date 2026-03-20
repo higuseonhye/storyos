@@ -7,6 +7,8 @@
   --accent: #c4b5a0;
   --conflict: #c9a88a;
   --final: #a8b8a0;
+  --critic-edge: rgba(196, 120, 108, 0.85);
+  --critic-glow: rgba(196, 120, 108, 0.12);
   --border: rgba(255, 255, 255, 0.06);
   --font-story: 'Cormorant Garamond', Georgia, serif;
   --font-ui: 'Outfit', system-ui, sans-serif;
