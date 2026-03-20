@@ -118,7 +118,7 @@ Goal: a single sequential story timeline that feels like "watching something thi
 
 Stack: React 18, Vite 5, plain CSS.
 
-Shell: App.jsx uses view "landing" | "story"; Landing.jsx + Landing.css = quiet intro only (no story logic); CTA fades out then story view mounts and timeline auto-starts.
+App: App.jsx uses view "landing" | "story"; Landing.jsx + Landing.css = quiet intro only (no story logic); CTA fades out then story view mounts and timeline auto-starts.
 
 Core code: src/story/tellStory.js
 - STORY_SEQUENCE: array of { text, type, delay }
