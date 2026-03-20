@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import './Landing.css'
 
-/** ms before CTAs unlock — first moments feel still, not demanding */
+/** ms before primary CTA unlocks — first moments feel still, not demanding */
 const CTA_READY_DELAY_MS = 1900
 
 export function Landing({ exiting, anticipating, onEnterStory }) {
@@ -66,17 +66,6 @@ export function Landing({ exiting, anticipating, onEnterStory }) {
             <br />
             A decision lands.
           </p>
-        </section>
-
-        <section className="landing__demo" aria-label="Demo">
-          <button
-            type="button"
-            className={`landing__demo-btn ${!ctaReady && !exiting && !anticipating ? 'landing__demo-btn--waiting' : ''}`}
-            onClick={onEnterStory}
-            disabled={locked}
-          >
-            Try the demo
-          </button>
         </section>
 
         <footer className="landing__footer">

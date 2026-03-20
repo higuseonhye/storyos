@@ -119,6 +119,10 @@
   margin-bottom: 4rem;
 }
 
+.landing__block:last-of-type {
+  margin-bottom: 4.5rem;
+}
+
 .landing__body {
   font-family: var(--font-ui);
   font-size: 0.9375rem;
@@ -133,41 +137,6 @@
   color: var(--text);
   margin-bottom: 1.1rem;
   font-weight: 400;
-}
-
-.landing__demo {
-  margin-bottom: 4.5rem;
-}
-
-.landing__demo-btn {
-  font-family: var(--font-ui);
-  font-size: 0.8125rem;
-  font-weight: 300;
-  letter-spacing: 0.12em;
-  color: var(--text-faint);
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0.5rem 0.75rem;
-  transition: color 0.35s ease, opacity 0.35s ease;
-}
-
-.landing__demo-btn:hover:not(:disabled) {
-  color: var(--text-soft);
-  opacity: 0.92;
-}
-
-.landing__demo-btn:disabled {
-  cursor: default;
-}
-
-.landing__demo-btn--waiting {
-  opacity: 0.35;
-  pointer-events: none;
-}
-
-.landing__demo-btn:disabled:not(.landing__demo-btn--waiting) {
-  opacity: 0.45;
 }
 
 .landing__footer {

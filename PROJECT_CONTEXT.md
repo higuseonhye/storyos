@@ -57,7 +57,7 @@ src/
 
 **UI flow**
 
-1. Default **`view === 'landing'`** — inner content **fades in** on load; CTAs unlock after ~1.9s. **Start a mission** / **Try the demo** → **~800ms pause** (landing still visible, `anticipating`) → **landing fades ~0.76s** → **`view === 'story'`** + **`running === true`**.  
+1. Default **`view === 'landing'`** — inner content **fades in** on load; **Start a mission** unlocks after ~1.9s → **~800ms pause** (landing still visible, `anticipating`) → **landing fades ~0.76s** → **`view === 'story'`** + **`running === true`**.  
 2. On the story screen, **Watch again** sets `running === true` after a run ends (replay). While playing, the button shows **Watching…**.  
 3. `StoryTimeline`’s `useEffect` runs an **async IIFE**: **`await wait(STORY_START_DELAY_MS)`** before `tellStory`, then `tellStory`  
 4. Each step: `onStep` → `setRevealed` appends one line  
@@ -98,7 +98,7 @@ Fixed **high-stakes commit demo** (runway + one bet) — all strings in `STORY_S
 
 ## 6. Design direction
 
-- **Landing:** inner **fade / lift on load**; CTAs disabled ~1.9s; **Start a mission** / **Try the demo**; post-click **~800ms** hold then **~0.76s** fade  
+- **Landing:** inner **fade / lift on load**; **Start a mission** disabled ~1.9s; post-click **~800ms** hold then **~0.76s** fade  
 - Dark background, generous spacing, minimal copy  
 - **Timeline:** vertical **thread spine** (gradient line) — reads as one process, not a chat log (`StoryTimeline.css`)  
 - Beats: role labels **Brief / Tension / Critic / Decision** where set; **default** lines stay unlabeled signal steps  
