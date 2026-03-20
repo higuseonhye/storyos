@@ -10,6 +10,7 @@ export default [
   react.configs.flat['jsx-runtime'],
   {
     files: ['**/*.{js,jsx}'],
+    ignores: ['server/**', 'api/**'],
     languageOptions: {
       ecmaVersion: 'latest',
       sourceType: 'module',
@@ -25,7 +26,7 @@ export default [
     settings: { react: { version: 'detect' } },
   },
   {
-    files: ['server/**/*.js'],
+    files: ['server/**/*.js', 'api/**/*.js'],
     languageOptions: {
       ecmaVersion: 'latest',
       sourceType: 'module',
