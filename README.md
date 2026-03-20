@@ -1,6 +1,6 @@
 # StoryOS
 
-Cinematic front-end demo: one **`STORY_SEQUENCE`**, one async **`tellStory()`** loop (no parallel timers). Click **Start** — a short pause, then beats in order with micro-gaps, **anticipation hushes** before **Conflict** and **Final Decision**, longer holds on those beats and on **Critic**.
+Cinematic front-end demo: one **`STORY_SEQUENCE`**, one async **`tellStory()`** loop (no parallel timers). Click **Start** — a short pause, then beats in order with micro-gaps; **Conflict** lands as a **disruption** (longer hush, stronger panel, slight scale); **Final** gets layered anticipation; **Critic** holds longer on screen.
 
 ```bash
 npm install

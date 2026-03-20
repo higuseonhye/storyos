@@ -15,8 +15,8 @@ export const PAUSE_BEFORE_FINAL_MS = 900
  */
 export const ANTICIPATION_BEFORE_FINAL_MS = 720
 
-/** ms hush before Conflict — tension before the turn */
-export const ANTICIPATION_BEFORE_CONFLICT_MS = 680
+/** ms hush before Conflict — longer than micro-gaps; reads as disruption, not “loading” */
+export const ANTICIPATION_BEFORE_CONFLICT_MS = 920
 
 /** ms after Start, before the first beat (used by StoryTimeline) */
 export const STORY_START_DELAY_MS = 850

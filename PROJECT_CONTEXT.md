@@ -67,7 +67,7 @@ src/
 1. Mission Initialized  
 2. Research Agent  
 3. Analysis Agent  
-4. Conflict (emphasis, longer `delay`)  
+4. Conflict (disruption: longer anticipation + hold, stronger panel treatment)  
 5. Strategy Agent  
 6. Critic Agent (longer `delay`; extra pause before final is in the runner)  
 7. Final Decision  
@@ -88,7 +88,7 @@ src/
 
 - Dark background, generous spacing, minimal copy  
 - Beats: **fade in + slight move up** (~550ms, ease-out curve) in `StoryEvent.css`  
-- **Conflict:** bordered panel, soft background, extra top margin  
+- **Conflict:** break in the flow — extra top margin, higher-contrast border/gradient panel, subtle lift + **~1.03 scale** on reveal; longer **anticipation** pause than between normal beats (`ANTICIPATION_BEFORE_CONFLICT_MS`)  
 - **Final:** slightly larger type, more padding, very subtle text glow  
 - Layout: mostly centered  
 
@@ -117,7 +117,7 @@ Core code: src/story/tellStory.js
 - Exported pacing: STORY_START_DELAY_MS, MICRO_BETWEEN_MS, ANTICIPATION_BEFORE_CONFLICT_MS, PAUSE_BEFORE_FINAL_MS, ANTICIPATION_BEFORE_FINAL_MS (+ STORY_SEQUENCE delays)
 - tellStory(onStep, isCancelled): one async for-loop only — no parallel timers; micro-pauses between steps; anticipation pauses before Conflict and before Final (two-stage pause before Final)
 
-UI: App.jsx sets running=true on Start; StoryTimeline awaits STORY_START_DELAY_MS then tellStory; pushes each step onto revealed; StoryEvent: fade/slide, conflict panel, final emphasis. Types: open | default | conflict | final.
+UI: App.jsx sets running=true on Start; StoryTimeline awaits STORY_START_DELAY_MS then tellStory; pushes each step onto revealed; StoryEvent: fade/slide; Conflict = disruptive panel + scale pop; Final emphasis. Types: open | default | conflict | final.
 
 Keep this architecture. Help me with: [your request here].
 Full notes: PROJECT_CONTEXT.md in the repo root.
