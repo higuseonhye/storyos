@@ -1,0 +1,117 @@
+/* Theater curtain — opening / closing red stage (velvet-like folds + valance) */
+
+.stage-curtain-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 8000;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.stage-curtain-layer:not(.stage-curtain-layer--open) {
+  pointer-events: auto;
+}
+
+.stage-curtain__valance {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: clamp(2.25rem, 5vh, 3.5rem);
+  z-index: 2;
+  background: linear-gradient(
+    180deg,
+    #2a0a0c 0%,
+    #5c1218 35%,
+    #3d0b10 70%,
+    #1a0508 100%
+  );
+  box-shadow:
+    0 4px 24px rgba(0, 0, 0, 0.55),
+    inset 0 -2px 0 rgba(212, 175, 55, 0.22);
+  border-bottom: 2px solid rgba(180, 140, 50, 0.45);
+}
+
+.stage-curtain__tiebacks {
+  position: absolute;
+  top: clamp(2.5rem, 5.5vh, 4rem);
+  left: 0;
+  right: 0;
+  z-index: 1;
+  pointer-events: none;
+  height: 0;
+}
+
+.stage-curtain__tassel {
+  position: absolute;
+  width: 10px;
+  height: 28px;
+  border-radius: 0 0 40% 40%;
+  background: linear-gradient(180deg, #c9a227, #6b4c0a);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+.stage-curtain__tassel--left {
+  left: 8%;
+}
+
+.stage-curtain__tassel--right {
+  right: 8%;
+}
+
+.stage-curtain {
+  position: absolute;
+  top: 0;
+  width: 53%;
+  height: 100%;
+  z-index: 1;
+  background:
+    repeating-linear-gradient(
+      92deg,
+      rgba(0, 0, 0, 0.22) 0px,
+      rgba(0, 0, 0, 0.22) 1px,
+      transparent 1px,
+      transparent 14px
+    ),
+    linear-gradient(
+      90deg,
+      #4a0a10 0%,
+      #8b1420 22%,
+      #6d0f18 45%,
+      #9a1828 68%,
+      #5c0c14 100%
+    );
+  box-shadow: inset 0 0 80px rgba(0, 0, 0, 0.45);
+  transition: transform 0.92s cubic-bezier(0.45, 0.02, 0.2, 1);
+  will-change: transform;
+}
+
+.stage-curtain--left {
+  left: 0;
+  transform: translateX(0) scaleX(1);
+  transform-origin: left center;
+}
+
+.stage-curtain--left.is-open {
+  transform: translateX(-102%) scaleX(1.02);
+}
+
+.stage-curtain--right {
+  right: 0;
+  transform: translateX(0) scaleX(1);
+  transform-origin: right center;
+}
+
+.stage-curtain--right.is-open {
+  transform: translateX(102%) scaleX(1.02);
+}
+
+.stage-curtain-layer--open .stage-curtain {
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stage-curtain {
+    transition-duration: 0.01ms;
+  }
+}

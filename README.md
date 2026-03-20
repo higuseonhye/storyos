@@ -45,4 +45,6 @@ See **`.env.example`** for all variables.
 
 **Checks:** `npm run lint` · `npm run ci` (lint + build).
 
+**Research & governance lens:** [`docs/RESEARCH_AND_GOVERNANCE.md`](./docs/RESEARCH_AND_GOVERNANCE.md)
+
 **Architecture & pacing (demo):** [`PROJECT_CONTEXT.md`](./PROJECT_CONTEXT.md) · **Paste for ChatGPT:** [`docs/CHATGPT_HANDOFF.md`](./docs/CHATGPT_HANDOFF.md)

@@ -4,7 +4,7 @@ import './Landing.css'
 /** ms before primary CTA unlocks — first moments feel still, not demanding */
 const CTA_READY_DELAY_MS = 1900
 
-export function Landing({ exiting, anticipating, onEnterLive, onEnterDemo }) {
+export function Landing({ anticipating, onEnterLive, onEnterDemo }) {
   const [awake, setAwake] = useState(false)
   const [ctaReady, setCtaReady] = useState(false)
 
@@ -17,12 +17,10 @@ export function Landing({ exiting, anticipating, onEnterLive, onEnterDemo }) {
     }
   }, [])
 
-  const locked = exiting || anticipating || !ctaReady
+  const locked = anticipating || !ctaReady
 
   return (
-    <div
-      className={`landing ${exiting ? 'landing--out' : ''} ${awake ? 'landing--awake' : ''}`}
-    >
+    <div className={`landing ${awake ? 'landing--awake' : ''}`}>
       <div className="landing__inner">
         <section className="landing__hero" aria-labelledby="landing-headline">
           <p className="landing__wordmark">StoryOS</p>
@@ -43,7 +41,7 @@ export function Landing({ exiting, anticipating, onEnterLive, onEnterDemo }) {
           <div className="landing__ctas">
             <button
               type="button"
-              className={`landing__cta ${!ctaReady && !exiting && !anticipating ? 'landing__cta--waiting' : ''}`}
+              className={`landing__cta ${!ctaReady && !anticipating ? 'landing__cta--waiting' : ''}`}
               onClick={onEnterLive}
               disabled={locked}
             >
@@ -51,7 +49,7 @@ export function Landing({ exiting, anticipating, onEnterLive, onEnterDemo }) {
             </button>
             <button
               type="button"
-              className={`landing__cta landing__cta--secondary ${!ctaReady && !exiting && !anticipating ? 'landing__cta--waiting' : ''}`}
+              className={`landing__cta landing__cta--secondary ${!ctaReady && !anticipating ? 'landing__cta--waiting' : ''}`}
               onClick={onEnterDemo}
               disabled={locked}
             >
