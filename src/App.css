@@ -1,20 +1,17 @@
 .app {
   min-height: 100vh;
-  max-width: 36rem;
-  margin: 0 auto;
-  padding: 5rem 2rem 6rem;
   display: flex;
   flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 1.75rem 5rem;
 }
 
-.app__brand {
-  margin-bottom: 4rem;
-}
-
-.app__name {
-  font-size: 0.6875rem;
+.app__title {
+  font-size: 0.625rem;
   font-weight: 400;
-  letter-spacing: 0.35em;
+  letter-spacing: 0.45em;
   text-transform: uppercase;
   color: var(--text-faint);
+  margin-bottom: 5rem;
 }

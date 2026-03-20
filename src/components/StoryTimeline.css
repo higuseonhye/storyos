@@ -1,28 +1,26 @@
 .story-timeline {
-  flex: 1;
-  min-height: 12rem;
+  width: 100%;
+  max-width: 22rem;
 }
 
-.story-timeline__inner {
-  max-height: min(60vh, 28rem);
+.story-timeline__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: min(52vh, 22rem);
   overflow-y: auto;
-  padding-right: 0.5rem;
   scroll-behavior: smooth;
 }
 
-.story-timeline__inner::-webkit-scrollbar {
-  width: 4px;
+.story-timeline__list::-webkit-scrollbar {
+  width: 3px;
 }
 
-.story-timeline__inner::-webkit-scrollbar-thumb {
+.story-timeline__list::-webkit-scrollbar-thumb {
   background: var(--border);
   border-radius: 2px;
 }
 
-.story-timeline__hush {
-  font-size: 0.8125rem;
-  font-weight: 300;
-  color: var(--text-faint);
-  padding: 2rem 0 3rem;
-  letter-spacing: 0.02em;
+.story-timeline__item {
+  margin: 0;
 }

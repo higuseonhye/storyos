@@ -1,12 +1,10 @@
 # StoryOS
 
-A minimal cinematic prototype: a calm, story-like timeline—no backend, no API.
-
-## Run
+A **~10 second** cinematic demo: the mission starts on load; timeline events appear one by one via `setTimeout`. No backend, no API, no interaction.
 
 ```bash
 npm install
 npm run dev
 ```
 
-Open http://localhost:5173 — tap **Begin** to watch the sequence.
+Open http://localhost:5173 and watch.
