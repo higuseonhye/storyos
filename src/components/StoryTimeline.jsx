@@ -1,48 +1,58 @@
 import { useEffect, useRef, useState } from 'react'
+import { tellStory } from '../story/tellStory'
 import { StoryEvent } from './StoryEvent'
 import './StoryTimeline.css'
 
-/** ~10s arc: seven beats spaced across the window */
-const EVENTS = [
-  { id: 'init', title: 'Mission Initialized', tone: 'open' },
-  { id: 'research', title: 'Research Agent', tone: 'default' },
-  { id: 'analysis', title: 'Analysis Agent', tone: 'default' },
-  { id: 'conflict', title: 'Conflict', tone: 'conflict' },
-  { id: 'strategy', title: 'Strategy Agent', tone: 'default' },
-  { id: 'critic', title: 'Critic Agent', tone: 'default' },
-  { id: 'final', title: 'Final Decision', tone: 'final' },
-]
-
-const TOTAL_MS = 10_000
-const delays = EVENTS.map((_, i) => Math.round((TOTAL_MS / (EVENTS.length + 1)) * (i + 1)))
-
-export function StoryTimeline() {
+export function StoryTimeline({ running, onRunEnd }) {
   const listRef = useRef(null)
-  const [shown, setShown] = useState(0)
+  const runTokenRef = useRef(0)
+  const [revealed, setRevealed] = useState([])
 
   useEffect(() => {
-    const timers = delays.map((ms, i) =>
-      setTimeout(() => setShown(i + 1), ms),
-    )
+    if (!running) return
 
-    return () => timers.forEach(clearTimeout)
-  }, [])
+    let alive = true
+    const token = ++runTokenRef.current
+    setRevealed([])
+
+    ;(async () => {
+      await tellStory(
+        (step) => {
+          if (!alive || token !== runTokenRef.current) return
+          setRevealed((prev) => [
+            ...prev,
+            { text: step.text, type: step.type, key: `${token}-${prev.length}` },
+          ])
+        },
+        () => !alive || token !== runTokenRef.current,
+      )
+      if (alive && token === runTokenRef.current) onRunEnd()
+    })()
+
+    return () => {
+      alive = false
+      runTokenRef.current += 1
+    }
+  }, [running, onRunEnd])
 
   useEffect(() => {
-    if (shown === 0 || !listRef.current) return
+    if (revealed.length === 0 || !listRef.current) return
     const items = listRef.current.querySelectorAll('.story-event')
-    items[shown - 1]?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
-  }, [shown])
+    items[items.length - 1]?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+  }, [revealed.length])
 
   return (
-    <section className="story-timeline" aria-label="StoryOS sequence">
-      <ul className="story-timeline__list" ref={listRef}>
-        {EVENTS.map((ev, i) => (
-          <li key={ev.id} className="story-timeline__item">
-            <StoryEvent title={ev.title} tone={ev.tone} show={i < shown} />
-          </li>
+    <section className="story-timeline" aria-live="polite" aria-label="Story">
+      <div className="story-timeline__list" ref={listRef}>
+        {revealed.length === 0 && !running && (
+          <p className="story-timeline__hint">Begin when you are ready.</p>
+        )}
+        {revealed.map((step) => (
+          <div key={step.key} className="story-timeline__row">
+            <StoryEvent text={step.text} type={step.type} show />
+          </div>
         ))}
-      </ul>
+      </div>
     </section>
   )
 }

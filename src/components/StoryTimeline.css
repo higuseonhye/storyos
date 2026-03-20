@@ -21,6 +21,15 @@
   border-radius: 2px;
 }
 
-.story-timeline__item {
+.story-timeline__row {
   margin: 0;
+}
+
+.story-timeline__hint {
+  font-size: 0.8125rem;
+  font-weight: 300;
+  color: var(--text-faint);
+  text-align: center;
+  padding: 2rem 0 3rem;
+  letter-spacing: 0.03em;
 }
