@@ -7,45 +7,52 @@
  * ms between steps — slight variation so rhythm feels less metronomic.
  * Index aligns with gap after step i (before step i+1); length = steps - 1.
  */
-const MICRO_BETWEEN_STEPS_MS = [390, 365, 410, 380, 355, 400]
+const MICRO_BETWEEN_STEPS_MS = [405, 370, 418, 372, 392, 358]
 
 /** @deprecated use MICRO_BETWEEN_STEPS_MS; kept for docs / imports */
 export const MICRO_BETWEEN_MS = 400
 
+/** Tiny extra hush right before conflict anticipation stacks */
+const CONFLICT_LEAD_IN_MS = 240
+
 /** ms “thinking” pause before the final line (first beat of anticipation) */
-export const PAUSE_BEFORE_FINAL_MS = 920
+export const PAUSE_BEFORE_FINAL_MS = 940
 
 /**
  * ms extra stillness before Final appears — stacked after PAUSE_BEFORE_FINAL_MS
  * so it feels like something is about to resolve, not “next item loading”.
  */
-export const ANTICIPATION_BEFORE_FINAL_MS = 780
+export const ANTICIPATION_BEFORE_FINAL_MS = 800
 
 /** ms hush before Conflict — longer than micro-gaps; reads as disruption, not “loading” */
-export const ANTICIPATION_BEFORE_CONFLICT_MS = 940
+export const ANTICIPATION_BEFORE_CONFLICT_MS = 1040
 
 /**
- * ms after story view is live, before the first beat — room to land after the transition.
+ * ms after story view is live, before the first beat — “thinking is starting”.
  */
-export const STORY_START_DELAY_MS = 1180
+export const STORY_START_DELAY_MS = 1080
 
 /**
- * ms after the final line is on screen — story is complete but UI stays “still”
- * (button still “Unfolding…”) so it feels like an ending, not an immediate reset.
+ * ms after the final line is on screen — hold for reflection (≥ ~2–3s of still story UI).
  */
 export const REFLECTION_AFTER_FINAL_MS = 5200
+
+/**
+ * ms after reflection, before `onRunEnd` — avoids a sharp UI “snap”.
+ */
+export const UI_SETTLE_AFTER_REFLECTION_MS = 750
 
 export function wait(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
 export const STORY_SEQUENCE = [
-  { text: 'Mission Initialized', type: 'open', delay: 820 },
-  { text: 'Research Agent', type: 'default', delay: 920 },
-  { text: 'Analysis Agent', type: 'default', delay: 880 },
-  { text: 'Conflict', type: 'conflict', delay: 2100 },
-  { text: 'Strategy Agent', type: 'default', delay: 900 },
-  { text: 'Critic Agent', type: 'default', delay: 1720 },
+  { text: 'Mission Initialized', type: 'open', delay: 830 },
+  { text: 'Research Agent', type: 'default', delay: 910 },
+  { text: 'Analysis Agent', type: 'default', delay: 865 },
+  { text: 'Conflict', type: 'conflict', delay: 2150 },
+  { text: 'Strategy Agent', type: 'default', delay: 895 },
+  { text: 'Critic Agent', type: 'default', delay: 1680 },
   { text: 'Final Decision', type: 'final', delay: 0 },
 ]
 
@@ -61,6 +68,8 @@ export async function tellStory(onStep, isCancelled) {
     if (isCancelled()) return
 
     if (step.type === 'conflict') {
+      await wait(CONFLICT_LEAD_IN_MS)
+      if (isCancelled()) return
       await wait(ANTICIPATION_BEFORE_CONFLICT_MS)
       if (isCancelled()) return
     }
@@ -86,5 +95,7 @@ export async function tellStory(onStep, isCancelled) {
 
   if (!isCancelled()) {
     await wait(REFLECTION_AFTER_FINAL_MS)
+    if (isCancelled()) return
+    await wait(UI_SETTLE_AFTER_REFLECTION_MS)
   }
 }

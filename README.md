@@ -2,7 +2,7 @@
 
 **Live demo:** [storyos.vercel.app](https://storyos.vercel.app/)
 
-Cinematic demo: landing frames **watching** (not chatting) → **Begin watching** / **Enter the demo** → softer handoff into the story view; one **`STORY_SEQUENCE`** and **`tellStory()`** with varied micro-pauses. **Conflict** disrupts; **Final** lingers with a long stillness and subtle ambient motion before **Watch again** unlocks.
+Cinematic demo: landing fades in; CTAs unlock after a short beat → **Start a mission** / **Try the demo** → pause, then fade → story; **`tellStory()`** with varied gaps, conflict lead-in, long reflection + gentle UI settle before **Watch again** eases in.
 
 ```bash
 npm install

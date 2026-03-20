@@ -1,28 +1,49 @@
+import { useEffect, useState } from 'react'
 import './Landing.css'
 
-export function Landing({ exiting, onEnterStory }) {
+/** ms before CTAs unlock — first moments feel still, not demanding */
+const CTA_READY_DELAY_MS = 1900
+
+export function Landing({ exiting, anticipating, onEnterStory }) {
+  const [awake, setAwake] = useState(false)
+  const [ctaReady, setCtaReady] = useState(false)
+
+  useEffect(() => {
+    const wake = window.setTimeout(() => setAwake(true), 100)
+    const cta = window.setTimeout(() => setCtaReady(true), CTA_READY_DELAY_MS)
+    return () => {
+      clearTimeout(wake)
+      clearTimeout(cta)
+    }
+  }, [])
+
+  const locked = exiting || anticipating || !ctaReady
+
   return (
-    <div className={`landing ${exiting ? 'landing--out' : ''}`}>
+    <div
+      className={`landing ${exiting ? 'landing--out' : ''} ${awake ? 'landing--awake' : ''}`}
+    >
       <div className="landing__inner">
         <section className="landing__hero" aria-labelledby="landing-headline">
           <p className="landing__wordmark">StoryOS</p>
           <p className="landing__kicker">
-            Not another answer — a window into how it gets there.
+            A front-end demo — no chat box, just a slow reveal of steps.
           </p>
           <h1 id="landing-headline" className="landing__headline">
             Watch AI think.
           </h1>
           <p className="landing__subtext">
-            This demo is a single story: you stay still and watch a mission unfold —
-            thought by thought, beat by beat. No prompts. Just attention.
+            One short mission plays out in order: research, tension, judgment, a
+            closing line. You don’t type. You watch — like following a thought as
+            it forms.
           </p>
           <button
             type="button"
-            className="landing__cta"
+            className={`landing__cta ${!ctaReady && !exiting && !anticipating ? 'landing__cta--waiting' : ''}`}
             onClick={onEnterStory}
-            disabled={exiting}
+            disabled={locked}
           >
-            Begin watching
+            Start a mission
           </button>
         </section>
 
@@ -50,11 +71,11 @@ export function Landing({ exiting, onEnterStory }) {
         <section className="landing__demo" aria-label="Demo">
           <button
             type="button"
-            className="landing__demo-btn"
+            className={`landing__demo-btn ${!ctaReady && !exiting && !anticipating ? 'landing__demo-btn--waiting' : ''}`}
             onClick={onEnterStory}
-            disabled={exiting}
+            disabled={locked}
           >
-            Enter the demo
+            Try the demo
           </button>
         </section>
 

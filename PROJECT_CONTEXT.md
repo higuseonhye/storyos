@@ -51,17 +51,17 @@ src/
     - `type` — `'open' | 'default' | 'conflict' | 'final'` → CSS variant on `StoryEvent`  
     - `delay` — ms to wait **after** this step appears (before micro-gap / next step)  
   - **`wait(ms)`** — exported; single `Promise` + `setTimeout` for all delays  
-  - **Exports:** pacing constants in §5 (start, micro-gaps, conflict/final anticipation, **reflection** after final)  
-  - **`tellStory(onStep, isCancelled)`** — one `for` loop: **anticipation** before **Conflict** and **Final** (two-stage pause before final), then `onStep` → `await wait(step.delay)` → **varied micro pauses** (`MICRO_BETWEEN_STEPS_MS`, not a single metronome); after the loop, **`REFLECTION_AFTER_FINAL_MS`** — **no parallel playback**  
+  - **Exports:** pacing constants in §5 (start, micro-gaps, conflict/final anticipation, **reflection**, **UI settle** after reflection)  
+  - **`tellStory(onStep, isCancelled)`** — one `for` loop: short lead-in + **anticipation** before **Conflict**; two-stage pause before **Final**; `onStep` → `delay` → **varied micro pauses** (`MICRO_BETWEEN_STEPS_MS`); then **`REFLECTION_AFTER_FINAL_MS`** + **`UI_SETTLE_AFTER_REFLECTION_MS`** before return — **no parallel playback**  
   - **`isCancelled()`** — handles unmount, React Strict Mode, and restarts  
 
 **UI flow**
 
-1. Default **`view === 'landing'`** — minimal intro; **Start a mission** or **Try the demo** triggers a short **landing fade-out**, then **`view === 'story'`** and **`running === true`** (timeline starts automatically).  
+1. Default **`view === 'landing'`** — inner content **fades in** on load; CTAs unlock after ~1.9s. **Start a mission** / **Try the demo** → **~800ms pause** (landing still visible, `anticipating`) → **landing fades ~0.76s** → **`view === 'story'`** + **`running === true`**.  
 2. On the story screen, **Watch again** sets `running === true` after a run ends (replay). While playing, the button shows **Watching…**.  
 3. `StoryTimeline`’s `useEffect` runs an **async IIFE**: **`await wait(STORY_START_DELAY_MS)`** before `tellStory`, then `tellStory`  
 4. Each step: `onStep` → `setRevealed` appends one line  
-5. After the story (including **reflection** stillness): `onRunEnd()` → `running === false`, button enabled again  
+5. After **reflection** + **`UI_SETTLE_AFTER_REFLECTION_MS`**: `onRunEnd()` → `running === false`; **Watch again** returns with a soft opacity transition  
 
 ---
 
@@ -79,24 +79,27 @@ src/
 
 | Constant | ms | Role |
 |----------|-----|------|
-| `STORY_START_DELAY_MS` | 1180 | After story view is live, before first beat (`StoryTimeline`) |
-| `MICRO_BETWEEN_MS` | 400 | Legacy export; gaps use **`MICRO_BETWEEN_STEPS_MS`** array in `tellStory.js` |
-| `ANTICIPATION_BEFORE_CONFLICT_MS` | 940 | Stillness before **Conflict** |
-| `PAUSE_BEFORE_FINAL_MS` | 920 | First quiet beat before **Final** |
-| `ANTICIPATION_BEFORE_FINAL_MS` | 780 | Second beat before **Final** |
-| `REFLECTION_AFTER_FINAL_MS` | 5200 | After **Final** is visible; `running` stays true — extended stillness |
+| `STORY_START_DELAY_MS` | 1080 | After story view is live, before first beat (`StoryTimeline`) |
+| `MICRO_BETWEEN_MS` | 400 | Legacy export; gaps use **`MICRO_BETWEEN_STEPS_MS`** in `tellStory.js` |
+| `ANTICIPATION_BEFORE_CONFLICT_MS` | 1040 | Stillness before **Conflict** (after internal 240ms lead-in) |
+| `PAUSE_BEFORE_FINAL_MS` | 940 | First quiet beat before **Final** |
+| `ANTICIPATION_BEFORE_FINAL_MS` | 800 | Second beat before **Final** |
+| `REFLECTION_AFTER_FINAL_MS` | 5200 | After **Final** is visible (≥ ~2–3s of stillness) |
+| `UI_SETTLE_AFTER_REFLECTION_MS` | 750 | After reflection, before `onRunEnd` — softer return to interactive UI |
 
-**`STORY_SEQUENCE` `delay` values (after line appears):** tuned per beat (e.g. open ~820ms, conflict ~2100ms, critic ~1720ms); **Final** 0ms.
+**`STORY_SEQUENCE` `delay` values (after line appears):** tuned per beat; **Final** 0ms.
+
+**`App.jsx` (not in `tellStory.js`):** `PAUSE_BEFORE_LANDING_FADE_MS` ≈ 800; `LANDING_FADE_OUT_MS` ≈ 760 (match `.landing` CSS).
 
 ---
 
 ## 6. Design direction
 
-- **Landing:** kicker + headline clarify *watching* (not chatting); longer ease-out fade (~0.72s); CTA **Begin watching** / **Enter the demo**  
+- **Landing:** inner **fade / lift on load**; CTAs disabled ~1.9s; **Start a mission** / **Try the demo**; post-click **~800ms** hold then **~0.76s** fade  
 - Dark background, generous spacing, minimal copy  
 - Beats: **fade in + slight move up** (~550ms, ease-out curve) in `StoryEvent.css`  
 - **Conflict:** break in the flow — extra top margin, higher-contrast border/gradient panel, subtle lift + **~1.03 scale** on reveal; longer **anticipation** pause than between normal beats (`ANTICIPATION_BEFORE_CONFLICT_MS`)  
-- **Final:** slower entrance (~1.1s / ~1.3s), radial highlight; **very slow alternate** glow + text opacity during the hold (reflection); long **`REFLECTION_AFTER_FINAL_MS`** before UI unlocks  
+- **Final:** slower entrance, radial highlight; slow ambient glow + text during hold; **`REFLECTION_AFTER_FINAL_MS`** then **`UI_SETTLE_AFTER_REFLECTION_MS`** before button returns smoothly (`app__start` opacity transition)  
 - Layout: mostly centered  
 
 ---
@@ -119,15 +122,11 @@ Goal: a single sequential story timeline that feels like "watching something thi
 
 Stack: React 18, Vite 5, plain CSS.
 
-App: App.jsx uses view "landing" | "story"; Landing.jsx + Landing.css = quiet intro only (no story logic); CTA fades out then story view mounts and timeline auto-starts.
+App: view landing | story; Landing = intro + ~1.9s CTA delay + load fade; click → ~800ms anticipation → ~0.76s landing fade → story + auto-run.
 
-Core code: src/story/tellStory.js
-- STORY_SEQUENCE: array of { text, type, delay }
-- wait(ms): single Promise + setTimeout
-- Exported pacing: STORY_START_DELAY_MS, MICRO_BETWEEN_MS (legacy), ANTICIPATION_*, REFLECTION_AFTER_FINAL_MS (+ STORY_SEQUENCE); between beats use MICRO_BETWEEN_STEPS_MS array inside tellStory
-- tellStory(onStep, isCancelled): one async for-loop — varied micro-gaps, anticipation before Conflict, two-stage before Final, long REFLECTION_AFTER_FINAL_MS (then onRunEnd)
+Core: tellStory.js — STORY_SEQUENCE; wait(); exports include REFLECTION_AFTER_FINAL_MS, UI_SETTLE_AFTER_REFLECTION_MS; MICRO_BETWEEN_STEPS_MS; conflict lead-in + anticipation; two-stage before final; reflection + UI settle before onRunEnd.
 
-UI: landing → ~0.72s fade, ~740ms handoff; story eases in; Watching… / Watch again; StoryTimeline STORY_START_DELAY_MS then tellStory; Final has ambient hold CSS. Types: open | default | conflict | final.
+UI: story shell eases in; Watching… / Watch again (soft opacity transition); StoryTimeline; Final ambient CSS. Types: open | default | conflict | final.
 
 Keep this architecture. Help me with: [your request here].
 Full notes: PROJECT_CONTEXT.md in the repo root.
