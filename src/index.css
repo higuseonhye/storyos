@@ -1,0 +1,38 @@
+:root {
+  --bg-deep: #0a0a0b;
+  --bg-surface: #111113;
+  --bg-elevated: #18181b;
+  --text-primary: #fafafa;
+  --text-secondary: #a1a1aa;
+  --text-muted: #71717a;
+  --accent: #22d3ee;
+  --accent-dim: rgba(34, 211, 238, 0.15);
+  --border: rgba(255, 255, 255, 0.06);
+  --font-sans: 'Outfit', system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', monospace;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-sans);
+  background: var(--bg-deep);
+  background-image: radial-gradient(ellipse 80% 50% at 50% 0%, rgba(34, 211, 238, 0.04) 0%, transparent 50%);
+  color: var(--text-primary);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+#root {
+  min-height: 100vh;
+}

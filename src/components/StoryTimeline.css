@@ -1,0 +1,35 @@
+.story-timeline {
+  flex: 1;
+  overflow-y: auto;
+  padding: 2rem 0 4rem;
+}
+
+.story-timeline::-webkit-scrollbar {
+  width: 6px;
+}
+
+.story-timeline::-webkit-scrollbar-track {
+  background: var(--bg-surface);
+}
+
+.story-timeline::-webkit-scrollbar-thumb {
+  background: var(--text-muted);
+  border-radius: 3px;
+}
+
+.story-timeline::-webkit-scrollbar-thumb:hover {
+  background: var(--text-secondary);
+}
+
+.story-timeline__placeholder {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  padding: 2rem 0;
+  animation: placeholderPulse 3s ease-in-out infinite;
+}
+
+@keyframes placeholderPulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.8; }
+}
