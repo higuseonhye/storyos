@@ -6,8 +6,17 @@
 /** ms between steps (after each step's own delay), for breathing room */
 export const MICRO_BETWEEN_MS = 400
 
-/** ms pause before the final beat appears */
+/** ms “thinking” pause before the final line (first beat of anticipation) */
 export const PAUSE_BEFORE_FINAL_MS = 900
+
+/**
+ * ms extra stillness before Final appears — stacked after PAUSE_BEFORE_FINAL_MS
+ * so it feels like something is about to resolve, not “next item loading”.
+ */
+export const ANTICIPATION_BEFORE_FINAL_MS = 720
+
+/** ms hush before Conflict — tension before the turn */
+export const ANTICIPATION_BEFORE_CONFLICT_MS = 680
 
 /** ms after Start, before the first beat (used by StoryTimeline) */
 export const STORY_START_DELAY_MS = 850
@@ -37,8 +46,15 @@ export async function tellStory(onStep, isCancelled) {
     const step = steps[i]
     if (isCancelled()) return
 
+    if (step.type === 'conflict') {
+      await wait(ANTICIPATION_BEFORE_CONFLICT_MS)
+      if (isCancelled()) return
+    }
+
     if (step.type === 'final') {
       await wait(PAUSE_BEFORE_FINAL_MS)
+      if (isCancelled()) return
+      await wait(ANTICIPATION_BEFORE_FINAL_MS)
       if (isCancelled()) return
     }
 

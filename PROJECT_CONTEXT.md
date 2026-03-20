@@ -49,8 +49,8 @@ src/
     - `type` — `'open' | 'default' | 'conflict' | 'final'` → CSS variant on `StoryEvent`  
     - `delay` — ms to wait **after** this step appears (before micro-gap / next step)  
   - **`wait(ms)`** — exported; single `Promise` + `setTimeout` for all delays  
-  - **Exports:** `STORY_START_DELAY_MS`, `MICRO_BETWEEN_MS`, `PAUSE_BEFORE_FINAL_MS` (documented in §5)  
-  - **`tellStory(onStep, isCancelled)`** — one `for` loop: optional pause before **final**, then `onStep` → `await wait(step.delay)` → **micro pause** between steps (not after the last) — **no parallel playback**  
+  - **Exports:** pacing constants in §5 (`STORY_START_DELAY_MS`, `MICRO_BETWEEN_MS`, anticipation + pre-final)  
+  - **`tellStory(onStep, isCancelled)`** — one `for` loop: **anticipation** before **Conflict** and **Final** (two-stage pause before final), then `onStep` → `await wait(step.delay)` → **micro pause** between steps (not after the last) — **no parallel playback**  
   - **`isCancelled()`** — handles unmount, React Strict Mode, and restarts  
 
 **UI flow**
@@ -114,8 +114,8 @@ Stack: React 18, Vite 5, plain CSS.
 Core code: src/story/tellStory.js
 - STORY_SEQUENCE: array of { text, type, delay }
 - wait(ms): single Promise + setTimeout
-- Exported pacing: STORY_START_DELAY_MS, MICRO_BETWEEN_MS, PAUSE_BEFORE_FINAL_MS (+ STORY_SEQUENCE delays)
-- tellStory(onStep, isCancelled): one async for-loop only — no parallel timers; micro-pauses between steps; extra pause before the final beat
+- Exported pacing: STORY_START_DELAY_MS, MICRO_BETWEEN_MS, ANTICIPATION_BEFORE_CONFLICT_MS, PAUSE_BEFORE_FINAL_MS, ANTICIPATION_BEFORE_FINAL_MS (+ STORY_SEQUENCE delays)
+- tellStory(onStep, isCancelled): one async for-loop only — no parallel timers; micro-pauses between steps; anticipation pauses before Conflict and before Final (two-stage pause before Final)
 
 UI: App.jsx sets running=true on Start; StoryTimeline awaits STORY_START_DELAY_MS then tellStory; pushes each step onto revealed; StoryEvent: fade/slide, conflict panel, final emphasis. Types: open | default | conflict | final.
 
