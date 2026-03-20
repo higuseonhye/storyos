@@ -21,6 +21,12 @@ export const ANTICIPATION_BEFORE_CONFLICT_MS = 920
 /** ms after Start, before the first beat (used by StoryTimeline) */
 export const STORY_START_DELAY_MS = 850
 
+/**
+ * ms after the final line is on screen — story is complete but UI stays “still”
+ * (button still “Unfolding…”) so it feels like an ending, not an immediate reset.
+ */
+export const REFLECTION_AFTER_FINAL_MS = 3200
+
 export function wait(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms))
 }
@@ -66,5 +72,9 @@ export async function tellStory(onStep, isCancelled) {
       await wait(MICRO_BETWEEN_MS)
       if (isCancelled()) return
     }
+  }
+
+  if (!isCancelled()) {
+    await wait(REFLECTION_AFTER_FINAL_MS)
   }
 }

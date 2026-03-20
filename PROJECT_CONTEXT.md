@@ -49,8 +49,8 @@ src/
     - `type` — `'open' | 'default' | 'conflict' | 'final'` → CSS variant on `StoryEvent`  
     - `delay` — ms to wait **after** this step appears (before micro-gap / next step)  
   - **`wait(ms)`** — exported; single `Promise` + `setTimeout` for all delays  
-  - **Exports:** pacing constants in §5 (`STORY_START_DELAY_MS`, `MICRO_BETWEEN_MS`, anticipation + pre-final)  
-  - **`tellStory(onStep, isCancelled)`** — one `for` loop: **anticipation** before **Conflict** and **Final** (two-stage pause before final), then `onStep` → `await wait(step.delay)` → **micro pause** between steps (not after the last) — **no parallel playback**  
+  - **Exports:** pacing constants in §5 (start, micro-gaps, conflict/final anticipation, **reflection** after final)  
+  - **`tellStory(onStep, isCancelled)`** — one `for` loop: **anticipation** before **Conflict** and **Final** (two-stage pause before final), then `onStep` → `await wait(step.delay)` → **micro pause** between steps (not after the last); after the loop, **`REFLECTION_AFTER_FINAL_MS`** so the ending holds before `onRunEnd()` — **no parallel playback**  
   - **`isCancelled()`** — handles unmount, React Strict Mode, and restarts  
 
 **UI flow**
@@ -58,7 +58,7 @@ src/
 1. User clicks **Start** → `running === true`  
 2. `StoryTimeline`’s `useEffect` runs an **async IIFE**: **`await wait(STORY_START_DELAY_MS)`** before `tellStory`, then `tellStory`  
 3. Each step: `onStep` → `setRevealed` appends one line  
-4. When finished: `onRunEnd()` → `running === false`, button enabled again  
+4. After the story (including **reflection** stillness): `onRunEnd()` → `running === false`, button enabled again  
 
 ---
 
@@ -70,7 +70,7 @@ src/
 4. Conflict (disruption: longer anticipation + hold, stronger panel treatment)  
 5. Strategy Agent  
 6. Critic Agent (longer `delay`; extra pause before final is in the runner)  
-7. Final Decision  
+7. Final Decision (slower entrance + glow in CSS; then **reflection** pause before UI “unlocks”)  
 
 **Timing constants** (see `tellStory.js`; import names match exports):
 
@@ -78,7 +78,10 @@ src/
 |----------|-----|------|
 | `STORY_START_DELAY_MS` | 850 | After **Start**, before first beat (`StoryTimeline`) |
 | `MICRO_BETWEEN_MS` | 400 | After each step’s `delay`, before the next (not after last) |
-| `PAUSE_BEFORE_FINAL_MS` | 900 | Before **`Final Decision`** is revealed |
+| `ANTICIPATION_BEFORE_CONFLICT_MS` | 920 | Stillness before **Conflict** |
+| `PAUSE_BEFORE_FINAL_MS` | 900 | First quiet beat before **Final** |
+| `ANTICIPATION_BEFORE_FINAL_MS` | 720 | Second beat before **Final** |
+| `REFLECTION_AFTER_FINAL_MS` | 3200 | After **Final** is visible; `running` stays true — no immediate reset |
 
 **`STORY_SEQUENCE` `delay` values (after line appears):** open/default beats 850–950ms; **Conflict** 2000ms; **Critic** 1800ms; **Final** 0ms.
 
@@ -89,7 +92,7 @@ src/
 - Dark background, generous spacing, minimal copy  
 - Beats: **fade in + slight move up** (~550ms, ease-out curve) in `StoryEvent.css`  
 - **Conflict:** break in the flow — extra top margin, higher-contrast border/gradient panel, subtle lift + **~1.03 scale** on reveal; longer **anticipation** pause than between normal beats (`ANTICIPATION_BEFORE_CONFLICT_MS`)  
-- **Final:** slightly larger type, more padding, very subtle text glow  
+- **Final:** **~1s / ~1.15s** entrance (slower than other beats), generous padding/margins, radial **highlight** + soft outer glow, layered **text-shadow**; reads as an **ending**, not the last list row  
 - Layout: mostly centered  
 
 ---
@@ -114,10 +117,10 @@ Stack: React 18, Vite 5, plain CSS.
 Core code: src/story/tellStory.js
 - STORY_SEQUENCE: array of { text, type, delay }
 - wait(ms): single Promise + setTimeout
-- Exported pacing: STORY_START_DELAY_MS, MICRO_BETWEEN_MS, ANTICIPATION_BEFORE_CONFLICT_MS, PAUSE_BEFORE_FINAL_MS, ANTICIPATION_BEFORE_FINAL_MS (+ STORY_SEQUENCE delays)
-- tellStory(onStep, isCancelled): one async for-loop only — no parallel timers; micro-pauses between steps; anticipation pauses before Conflict and before Final (two-stage pause before Final)
+- Exported pacing: STORY_START_DELAY_MS, MICRO_BETWEEN_MS, ANTICIPATION_BEFORE_CONFLICT_MS, PAUSE_BEFORE_FINAL_MS, ANTICIPATION_BEFORE_FINAL_MS, REFLECTION_AFTER_FINAL_MS (+ STORY_SEQUENCE delays)
+- tellStory(onStep, isCancelled): one async for-loop only — no parallel timers; micro-pauses; anticipation before Conflict and two-stage before Final; after the last step, REFLECTION_AFTER_FINAL_MS before returning (then onRunEnd)
 
-UI: App.jsx sets running=true on Start; StoryTimeline awaits STORY_START_DELAY_MS then tellStory; pushes each step onto revealed; StoryEvent: fade/slide; Conflict = disruptive panel + scale pop; Final emphasis. Types: open | default | conflict | final.
+UI: App.jsx sets running=true on Start; StoryTimeline awaits STORY_START_DELAY_MS then tellStory; StoryEvent: fade/slide; Conflict = disruption; Final = slower settle + glow + reflection hold. Types: open | default | conflict | final.
 
 Keep this architecture. Help me with: [your request here].
 Full notes: PROJECT_CONTEXT.md in the repo root.
