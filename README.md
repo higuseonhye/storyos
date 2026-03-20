@@ -41,13 +41,13 @@ See **`.env.example`** for all variables.
 
 ### Same-site deploy (Vercel: frontend + API together)
 
-This repo includes **`api/health.js`**, **`api/agents.js`**, and **`api/discuss/stream.js`**, which delegate to the same Express app via **`server/getApp.js`** (Vercel needs one file per URL path — `/api/index` alone does not handle `/api/health`).
+This repo includes **`api/health.js`**, **`api/agents.js`**, and **`api/discuss/stream.js`**, which delegate to the same Express app via **`server/getApp.js`**.
 
-1. Connect the repo to **Vercel**. Use **Framework Preset: Vite** (or auto-detect). Leave **Root Directory** empty unless the app lives in a subfolder. **`vercel.json` must not set `outputDirectory`** — otherwise **`/api/*` can 404** (static-only deploy). Dashboard **Output Directory** can stay **`dist`** for Vite.
-2. In **Vercel → Project → Settings → Environment Variables** (Production + Preview as needed), set:
-   - **`OPENAI_API_KEY`** — your key (or use Anthropic below).
-   - Optionally **`OPENAI_MODEL`**, **`LLM_PROVIDER`**, **`ANTHROPIC_API_KEY`**, **`ANTHROPIC_MODEL`** — same meanings as `.env.example`.
-3. **Do not set `VITE_API_BASE_URL`** for this setup — the browser should call **`/api/...`** on the **same** origin (`storyos.vercel.app`).
+**Why `vercel.json` uses `builds`:** Plain **Vite-only** projects on Vercel only run `vite build` and **do not** ship root **`/api/*.js`** as Functions ([Vite on Vercel — Vercel Functions](https://vercel.com/docs/frameworks/vite) recommends Nitro or another full-stack layer). StoryOS uses the **legacy `builds`** array: **`@vercel/node`** for each API file + **`@vercel/static-build`** for `dist/`, so `/api/*` actually deploys.
+
+1. Connect the repo to **Vercel**. Leave **Root Directory** empty. If the dashboard warns that **Project Settings are overridden** by `vercel.json` `builds`, that is expected.
+2. **Secrets:** do **not** rely on uploading a `.env` file — Vercel does not inject it into serverless Functions. In **Settings → Environment Variables** (Production + Preview as needed), set **`OPENAI_API_KEY`**, and optionally **`OPENAI_MODEL`**, **`LLM_PROVIDER`**, **`ANTHROPIC_API_KEY`**, **`ANTHROPIC_MODEL`** (same meanings as `.env.example`).
+3. **Do not set `VITE_API_BASE_URL`** for this setup — the browser should call **`/api/...`** on the **same** deployment origin.
 4. Redeploy. **`MCP_SERVERS` is ignored on Vercel** (stdio MCP needs a long-running Node process); use **Railway/Render/Fly** for the full API + MCP if you need that.
 
 **Limits:** Long panel streams may hit **serverless max duration** (e.g. 10s on Hobby, up to 60s with Pro and `maxDuration` in each `api/*.js`). Upgrade plan or host the API elsewhere if hits time out.

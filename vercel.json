@@ -1,6 +1,16 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "framework": "vite",
+  "version": 2,
+  "builds": [
+    { "src": "api/health.js", "use": "@vercel/node" },
+    { "src": "api/agents.js", "use": "@vercel/node" },
+    { "src": "api/discuss/stream.js", "use": "@vercel/node" },
+    {
+      "src": "package.json",
+      "use": "@vercel/static-build",
+      "config": { "distDir": "dist" }
+    }
+  ],
   "headers": [
     {
       "source": "/(.*)",
