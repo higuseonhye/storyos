@@ -101,9 +101,10 @@ src/
 
 ---
 
-## 7. GitHub
+## 7. GitHub & deploy
 
 - A remote may already be configured (check with `git remote -v`).  
+- **Production (Vercel):** [storyos.vercel.app](https://storyos.vercel.app/)  
 - Commits and pushes happen in your environment.
 
 ---
